@@ -27,7 +27,7 @@ El proyecto utiliza un archivo `.env` para gestionar las variables de entorno. C
 ```env
 # OpenTelemetry Configuration for SigNoz
 OTEL_SERVICE_NAME=microservices
-OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 
 # Service Ports
 PORT_GATEWAY=3000
@@ -90,21 +90,31 @@ La gestión del esquema de la base de datos se centraliza en la librería `prism
 
 ## 7. Observabilidad (Host Metrics)
 
-Para recolectar métricas del host (CPU, Memoria, Disco, Red) y de la base de datos PostgreSQL, necesitas ejecutar el OpenTelemetry Collector en tu máquina.
+Para recolectar métricas del host (CPU, Memoria, Disco, Red) y de la base de datos PostgreSQL, necesitas ejecutar el OpenTelemetry Collector Contrib en tu máquina.
 
-### 7.1. Windows
+### 7.1. Descarga del OpenTelemetry Collector
+
+1.  Ve a la página de [releases de OpenTelemetry Collector Contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib/releases).
+2.  Descarga el binario adecuado para tu sistema operativo (por ejemplo, `otelcol-contrib_0.114.0_windows_amd64.tar.gz` para Windows).
+3.  Descomprime el archivo y coloca el ejecutable (`otelcol-contrib.exe` en Windows) en una ubicación de tu elección.
+
+### 7.2. Ejecución del Collector
+
+Una vez que tengas el colector:
+
+#### Windows
 
 1.  Abre PowerShell en la raíz del proyecto.
-2.  Ejecuta el siguiente comando:
+2.  Ejecuta el siguiente comando, reemplazando `path\to\` con la ruta donde hayas guardado el colector:
     ```powershell
-    .\signoz-config\collectors\windows\otelcol-contrib_0.114.0_windows_amd64\otelcol-contrib.exe --config signoz-config\collectors\windows\config.yaml
+    .\path\to\otelcol-contrib.exe --config signoz-config\collectors\windows\config.yaml
     ```
 
-### 7.2. Linux
+#### Linux
 
-1.  Asegúrate de tener el binario `otelcol-contrib` instalado o descárgalo.
-2.  Ejecuta el colector usando la configuración proporcionada:
+1.  Abre una terminal en la raíz del proyecto.
+2.  Ejecuta el colector usando la configuración proporcionada, reemplazando `path/to/` con la ruta donde hayas guardado el colector:
     ```bash
-    ./signoz-config/collectors/linux/otelcol-contrib --config signoz-config/collectors/linux/config.yaml
+    ./path/to/otelcol-contrib --config signoz-config/collectors/linux/config.yaml
     ```
     *(Nota: Si ejecutas esto en una máquina diferente a donde corre Signoz, actualiza la IP en `signoz-config/collectors/linux/config.yaml`)*

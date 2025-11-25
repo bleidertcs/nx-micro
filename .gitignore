@@ -10050,3 +10050,13 @@ node_modules/@opentelemetry/exporter-logs-otlp-proto/build/esnext/platform/node/
 node_modules/@opentelemetry/exporter-logs-otlp-proto/build/esnext/platform/node/OTLPLogExporter.d.ts
 node_modules/@opentelemetry/exporter-logs-otlp-proto/build/esnext/platform/node/OTLPLogExporter.js
 node_modules/@opentelemetry/exporter-logs-otlp-proto/build/esnext/platform/node/OTLPLogExporter.js.map
+
+# Prisma generated client
+libs/prisma-client/src/lib/generated/
+apps/service1/src/generated/
+apps/service2/src/generated/
+
+# OTEL Collector binaries
+**/otelcol-contrib.exe
+**/otelcol-contrib_*.tar.gz
+**/otelcol-contrib_*_windows_amd64/
