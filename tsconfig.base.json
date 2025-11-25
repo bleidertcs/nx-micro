@@ -10,15 +10,27 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@api-gateway/shared-lib": ["libs/shared-lib/src/index.ts"],
-      "@my-org/observability": ["libs/observability/src/index.ts"],
-      "@nx-microservices/prisma-client": ["libs/prisma-client/src/index.ts"]
+      "@nx-microservices/shared-lib": [
+        "libs/shared-lib/src/index.ts"
+      ],
+      "@nx-microservices/observability": [
+        "libs/observability/src/index.ts"
+      ],
+      "@nx-microservices/prisma-client": [
+        "libs/prisma-client/src/index.ts"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }
