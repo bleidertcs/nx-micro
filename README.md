@@ -88,17 +88,62 @@ La gestión del esquema de la base de datos se centraliza en la librería `prism
 - `pnpm prisma:generate`: (Re)genera el cliente de Prisma después de cambiar el esquema.
 - `pnpm prisma:db:pull`: Actualiza el `schema.prisma` para que coincida con el estado actual de la base de datos.
 
-## 7. Observabilidad (Host Metrics)
+## 7. Documentación de la API
+
+Todas las APIs están disponibles a través del API Gateway con el prefijo `/api`. A continuación se detallan los endpoints disponibles:
+
+### 7.1. Estado de los Servicios
+
+#### Obtener estado de todos los servicios
+```bash
+curl -X GET http://localhost:3000/api/services/health
+```
+
+#### Obtener estado de un servicio específico
+```bash
+# Para service1
+curl -X GET http://localhost:3000/api/services/service1/health
+
+# Para service2
+curl -X GET http://localhost:3000/api/services/service2/health
+```
+
+### 7.2. Endpoints de Ejemplo
+
+#### Obtener saludo de un servicio
+```bash
+# Obtener saludo de service1
+curl -X GET http://localhost:3000/api/services/service1/hello
+
+# Obtener saludo de service2
+curl -X GET http://localhost:3000/api/services/service2/hello
+```
+
+#### Probar manejo de errores
+```bash
+# Generar un error en service1
+curl -X GET http://localhost:3000/api/services/service1/error
+```
+
+#### Comandos personalizados
+```bash
+# Enviar comando a un servicio
+curl -X POST http://localhost:3000/api/services/service1/ejemplo \
+  -H "Content-Type: application/json" \
+  -d '{"param1": "valor1", "param2": "valor2"}'
+```
+
+## 8. Observabilidad (Host Metrics)
 
 Para recolectar métricas del host (CPU, Memoria, Disco, Red) y de la base de datos PostgreSQL, necesitas ejecutar el OpenTelemetry Collector Contrib en tu máquina.
 
-### 7.1. Descarga del OpenTelemetry Collector
+### 8.1. Descarga del OpenTelemetry Collector
 
 1.  Ve a la página de [releases de OpenTelemetry Collector Contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib/releases).
 2.  Descarga el binario adecuado para tu sistema operativo (por ejemplo, `otelcol-contrib_0.114.0_windows_amd64.tar.gz` para Windows).
 3.  Descomprime el archivo y coloca el ejecutable (`otelcol-contrib.exe` en Windows) en una ubicación de tu elección.
 
-### 7.2. Ejecución del Collector
+### 8.2. Ejecución del Collector
 
 Una vez que tengas el colector:
 
