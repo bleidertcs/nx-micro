@@ -8,10 +8,10 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
       "options": {
-        "jestConfig": "csv-processor-e2e/jest.config.ts",
+        "jestConfig": "apps/csv-processor-e2e/jest.config.ts",
         "passWithNoTests": true
       },
-      "dependsOn": ["csv-processor:build", "csv-processor:serve"]
+      "dependsOn": ["csv-processor:build", "csv-processor:serve", "api-gateway:serve"]
     }
   }
 }

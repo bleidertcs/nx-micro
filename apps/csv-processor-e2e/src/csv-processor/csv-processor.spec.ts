@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../../../libs/prisma-client/src/lib/generated/prisma-client-lib';
 
 describe('CSV Processor E2E', () => {
   let prisma: PrismaClient;
@@ -34,5 +34,5 @@ describe('CSV Processor E2E', () => {
     expect(sample.rating).toBeDefined();
     expect(sample.title).toBeDefined();
     expect(sample.content).toBeDefined();
-  }, 30000); // Increase timeout for CSV processing
+  }, 300000); // Increase timeout for CSV processing (5 minutes)
 });

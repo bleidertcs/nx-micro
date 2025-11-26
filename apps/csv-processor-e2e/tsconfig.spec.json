@@ -6,10 +6,13 @@
     "types": [
       "jest",
       "node"
-    ]
+    ],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "jest.config.ts",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "../../libs/prisma-client/src/lib/generated/prisma-client-lib/**/*.ts"
   ]
 }

@@ -11,7 +11,7 @@ export class CsvController {
 
     @Post('process')
     async processCsv() {
-        this.logger.log('Received request to process CSV');
+        this.logger.log({ message: 'Received request to process CSV' });
         return this.client.send({ cmd: 'process_csv' }, {});
     }
 }
