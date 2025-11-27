@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { PrismaClient } from '../../../../libs/prisma-client/src/lib/generated/prisma-client-lib';
+import { PrismaClient } from '@nx-microservices/prisma-client';
 
 describe('CSV Processor E2E', () => {
   let prisma: PrismaClient;

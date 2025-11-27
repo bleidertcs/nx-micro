@@ -1,7 +1,6 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { Inject } from '@nestjs/common';
-import { LOGGER_TOKEN } from 'libs/observability/src';
+import { LOGGER_TOKEN } from '@nx-microservices/observability';
 import { Logger } from 'winston';
 
 @Catch(HttpException)

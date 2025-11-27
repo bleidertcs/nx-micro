@@ -1,5 +1,7 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { join } = require('path');
+const { join } = require('node:path');
+
+const prismaGeneratedSourceMapWarning = /Failed to parse source map.*prisma-client[\\/].*library\.js\.map/;
 
 module.exports = {
   output: {
@@ -9,6 +11,7 @@ module.exports = {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     }),
   },
+  ignoreWarnings: [{ message: prismaGeneratedSourceMapWarning }],
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',

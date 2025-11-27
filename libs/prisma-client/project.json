@@ -1,7 +1,7 @@
 {
   "name": "prisma-client",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/prisma-client/src",
+  "sourceRoot": "@nx-microservices/prisma-client/src",
   "projectType": "library",
   "tags": [],
   "// targets": "to see all targets run: nx show project prisma-client --web",

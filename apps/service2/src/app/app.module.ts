@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ObservabilityModule } from 'libs/observability/src';
-import { PrismaClientModule } from 'libs/prisma-client/src';
+import { ObservabilityModule } from '@nx-microservices/observability';
+import { PrismaClientModule } from '@nx-microservices/prisma-client';
 
 @Module({
   imports: [

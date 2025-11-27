@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { LOGGER_TOKEN } from 'libs/observability/src';
+import { LOGGER_TOKEN } from '@nx-microservices/observability';
 import { Logger } from 'winston';
 
 @Injectable()

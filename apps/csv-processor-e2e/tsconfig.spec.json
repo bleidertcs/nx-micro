@@ -12,7 +12,6 @@
   },
   "include": [
     "jest.config.ts",
-    "src/**/*.ts",
-    "../../libs/prisma-client/src/lib/generated/prisma-client-lib/**/*.ts"
+    "src/**/*.ts"
   ]
 }

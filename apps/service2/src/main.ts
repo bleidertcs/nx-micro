@@ -3,13 +3,13 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app/app.module';
 import { RpcCustomExceptionFilter } from './common/exceptions/rpc-custom-exception.filter';
 import { envs } from './app/config';
-import { initObservability } from 'libs/observability/src/lib/observability';
+import { initObservability } from '@nx-microservices/observability';
 
 async function bootstrap() {
   // Initialize observability with the correct service name

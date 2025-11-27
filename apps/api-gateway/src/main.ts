@@ -7,7 +7,7 @@ import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { envs } from './config/envs';
-import { initObservability } from 'libs/observability/src/lib/observability';
+import { initObservability } from '@nx-microservices/observability';
 
 async function bootstrap() {
   // Initialize observability with the correct service name

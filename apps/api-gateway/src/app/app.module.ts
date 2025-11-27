@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { GatewayController } from './controllers/gateway.controller';
 import { HealthController } from './controllers/health.controller';
-import { ObservabilityModule } from 'libs/observability/src';
+import { ObservabilityModule } from '@nx-microservices/observability';
 import { microservicesConfig } from '../config/microservices.config';
 import { providersConfig } from '../config/providers.config';
 

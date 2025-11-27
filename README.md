@@ -74,11 +74,28 @@ Los servicios se iniciarán en los puertos definidos en tu archivo `.env`.
 
 ## 5. Ejecución de Pruebas
 
-Para ejecutar las pruebas de extremo a extremo (e2e), que validan el flujo completo a través del `api-gateway`, asegúrate primero de que todos los servicios se estén ejecutando (con `pnpm start:all` en una terminal separada) y luego ejecuta:
+### 5.1. E2E del API Gateway
+
+Para ejecutar las pruebas de extremo a extremo (e2e) del `api-gateway`, asegúrate primero de que todos los servicios se estén ejecutando (con `pnpm start:all` en una terminal separada) y luego ejecuta:
 
 ```bash
 pnpx nx e2e api-gateway-e2e
 ```
+
+### 5.2. E2E del CSV Processor
+
+Las pruebas E2E de `apps/csv-processor` validan el flujo que dispara el procesamiento del CSV y revisa la base de datos. Requisitos previos:
+
+1. Base de datos y migraciones aplicadas (`pnpm prisma:migrate:dev`).
+2. Servicios `api-gateway` y `csv-processor` corriendo (puedes usar `pnpm start:all` o levantar cada uno en terminales separadas con `pnpm start:api-gateway` y `pnpm start:csv-processor`).
+
+Luego ejecuta el script dedicado:
+
+```bash
+pnpm test:csv-processor:e2e
+```
+
+Este comando usa `nx e2e csv-processor-e2e`, por lo que puedes adaptar los mismos parámetros de Nx si necesitas personalizarlo (por ejemplo, `--watch`).
 
 ## 6. Scripts Útiles de Prisma
 
@@ -123,6 +140,12 @@ curl -X GET http://localhost:3000/api/services/service2/hello
 ```bash
 # Generar un error en service1
 curl -X GET http://localhost:3000/api/services/service1/error
+```
+
+#### Procesar archivo CSV
+```bash
+# Procesar archivo CSV y guardar datos en la base de datos
+curl -X POST http://localhost:3000/api/csv/process
 ```
 
 #### Comandos personalizados

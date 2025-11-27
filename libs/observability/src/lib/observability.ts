@@ -7,7 +7,6 @@ import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentation
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import { resourceFromDetectedResource } from '@opentelemetry/resources/build/src/ResourceImpl';
-import { PrismaInstrumentation } from '@prisma/instrumentation';
 
 // Configuración por defecto para entorno local
 // Docker expone el puerto 4318 en localhost, así que esto funcionará directo.

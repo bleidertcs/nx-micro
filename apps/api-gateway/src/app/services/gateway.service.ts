@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { LOGGER_TOKEN } from 'libs/observability/src';
+import { LOGGER_TOKEN } from '@nx-microservices/observability';
 import { Logger } from 'winston';
 import { timeout } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';

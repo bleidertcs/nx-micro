@@ -13,6 +13,7 @@
     "start:service2": "nx serve service2",
     "start:csv-processor": "nx serve csv-processor",
     "start:api-gateway": "nx serve api-gateway",
+    "test:csv-processor:e2e": "nx e2e csv-processor-e2e",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:generate": "prisma generate",
     "prisma:db:pull": "prisma db pull"
@@ -75,6 +76,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "20.19.9",
     "dotenv": "^17.2.3",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "jest": "^30.0.2",

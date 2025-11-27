@@ -1,7 +1,7 @@
 import { Controller, Inject } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { AppService } from './app.service';
-import { LOGGER_TOKEN } from 'libs/observability/src';
+import { LOGGER_TOKEN } from '@nx-microservices/observability';
 import { Logger } from 'winston';
 
 @Controller()

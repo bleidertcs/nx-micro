@@ -36,8 +36,10 @@ export class ProcessCsvUseCase {
                 const title = row[1];
                 const content = row[2];
 
-                if (!isNaN(rating)) {
+                if (!isNaN(rating) && typeof title === 'string' && typeof content === 'string') {
                     batch.push({ rating, title, content });
+                } else {
+                    this.logger.warn(`Skipping invalid row: ${row}`);
                 }
 
                 if (batch.length >= BATCH_SIZE) {

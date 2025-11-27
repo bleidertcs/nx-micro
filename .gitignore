@@ -10060,3 +10060,4 @@ apps/service2/src/generated/
 **/otelcol-contrib.exe
 **/otelcol-contrib_*.tar.gz
 **/otelcol-contrib_*_windows_amd64/
+train.csv
