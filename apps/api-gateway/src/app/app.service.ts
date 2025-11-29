@@ -10,17 +10,4 @@ export class AppService {
     this.logger.info('API Gateway Service initialized');
   }
 
-  getHello(): string {
-    this.logger.info('API Gateway says hello!');
-    return 'Hello from API Gateway!';
-  }
-
-  getHealth(): object {
-    this.logger.info('API Gateway says hello!');
-    return {
-      status: 'ok',
-      service: 'api-gateway',
-      timestamp: new Date().toISOString(),
-    };
-  }
 }

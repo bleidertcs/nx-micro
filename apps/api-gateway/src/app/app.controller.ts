@@ -14,10 +14,5 @@ export class AppController {
     this.logger.info('API Gateway Controller initialized');
   }
 
-  @Get()
-  getHello(): string {
-    this.logger.info('GET / endpoint called on API Gateway');
-    return this.appService.getHello();
-  }
 
 }

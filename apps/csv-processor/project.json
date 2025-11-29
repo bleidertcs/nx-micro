@@ -63,14 +63,14 @@
         "build"
       ],
       "options": {
-        "command": "node -r dotenv/config ./dist/csv-processor/main.js"
+        "command": "node -r dotenv/config ./dist/apps/csv-processor/main.js"
       },
       "configurations": {
         "development": {
-          "command": "node -r dotenv/config ./dist/csv-processor/main.js"
+          "command": "node -r dotenv/config ./dist/apps/csv-processor/main.js"
         },
         "production": {
-          "command": "node -r dotenv/config ./dist/csv-processor/main.js"
+          "command": "node -r dotenv/config ./dist/apps/csv-processor/main.js"
         }
       }
     },

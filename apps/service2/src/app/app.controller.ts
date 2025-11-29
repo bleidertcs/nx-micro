@@ -1,22 +1,12 @@
 import { Controller, Inject } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
-import { AppService } from './app.service';
-import { LOGGER_TOKEN } from '@nx-microservices/observability';
 import { Logger } from 'winston';
+import { LOGGER_TOKEN } from '@nx-microservices/observability';
 
 @Controller()
 export class AppController {
   constructor(
-    private readonly appService: AppService,
     @Inject(LOGGER_TOKEN) private readonly logger: Logger,
   ) {
     this.logger.info('Service2 Controller initialized');
   }
-
-  @MessagePattern({ cmd: 'find_all_examples' })
-  findAllExamples() {
-    this.logger.info('FIND_ALL_EXAMPLES message pattern called');
-    return this.appService.findAllExamples();
-  }
-
 }

@@ -13,10 +13,4 @@ export class AppController {
     this.logger.info('AppController initialized from service1');
   }
 
-  @MessagePattern({ cmd: 'create_example' })
-  createExample(@Payload() data: { name: string }) {
-    this.logger.info(`CREATE_EXAMPLE message pattern called with name: ${data.name}`);
-    return this.appService.createExample(data.name);
-  }
-
 }

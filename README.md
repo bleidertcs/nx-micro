@@ -34,39 +34,7 @@ PORT_GATEWAY=3000
 PORT_SERVICE1=3001
 PORT_SERVICE2=3002
 
-# Database Configuration
-DATABASE_URL="postgresql://postgres:root@localhost:5432/test_micro?schema=public"
-```
 
-**Importante:** Asegúrate de que la `DATABASE_URL` coincida con la configuración de tu base de datos.
-
-## 3. Base de Datos
-
-### 3.1. Iniciar la Base de Datos
-
-El proyecto incluye un archivo `docker-compose.yaml` para levantar fácilmente una base de datos PostgreSQL y otros servicios como SigNoz para observabilidad.
-
-Para iniciar la base de datos y los demás servicios en contenedores, ejecuta:
-
-```bash
-docker-compose up -d
-```
-
-### 3.2. Aplicar Migraciones
-
-Una vez que la base de datos esté en funcionamiento, necesitas aplicar las migraciones del esquema de Prisma para crear las tablas necesarias.
-
-```bash
-pnpm prisma:migrate:dev
-```
-
-Este comando leerá el esquema centralizado en `libs/prisma-client` y actualizará la base de datos.
-
-## 4. Ejecución de la Aplicación
-
-Para iniciar todos los microservicios (api-gateway, service1, service2) simultáneamente, ejecuta:
-
-```bash
 pnpm start:all
 ```
 
@@ -104,6 +72,34 @@ La gestión del esquema de la base de datos se centraliza en la librería `prism
 - `pnpm prisma:migrate:dev`: Crea y aplica una nueva migración a partir de los cambios en el `schema.prisma`.
 - `pnpm prisma:generate`: (Re)genera el cliente de Prisma después de cambiar el esquema.
 - `pnpm prisma:db:pull`: Actualiza el `schema.prisma` para que coincida con el estado actual de la base de datos.
+
+## 6.1. Base de datos Netflix
+
+### Opción automática (recomendado)
+
+1. **Crear la tabla**  
+   ```bash
+   npx prisma db push --schema=libs/prisma-netflix/prisma/schema.prisma
+   ```
+
+2. **Poblar la tabla**  
+   ```bash
+   npx ts-node --project libs/prisma-netflix/tsconfig.seed.json libs/prisma-netflix/seed.ts
+   ```
+
+### Opción manual (psql)
+
+1. **Crear la base de datos (si no existe)**  
+   ```bash
+   docker exec -it <nombre_contenedor_postgres> createdb -U postgres netflix_shows
+   ```
+
+2. **Importar los datos**  
+   ```bash
+   psql "postgresql://postgres:root@localhost:5432/netflix_shows" -f libs/prisma-netflix/netflix_shows.sql
+   ```
+
+> El archivo `netflix_shows.sql` se encuentra en `libs/prisma-netflix/netflix_shows.sql`.
 
 ## 7. Documentación de la API
 
