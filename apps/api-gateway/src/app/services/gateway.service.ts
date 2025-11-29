@@ -10,8 +10,8 @@ import { ServiceResponse } from '../../interfaces/service-health.interface';
 @Injectable()
 export class GatewayService {
   constructor(
-    @Inject(SERVICES.SERVICE1) private readonly service1Client: ClientProxy,
-    @Inject(SERVICES.SERVICE2) private readonly service2Client: ClientProxy,
+    @Inject(SERVICES.API_AUTH) private readonly apiAuthClient: ClientProxy,
+    @Inject(SERVICES.NETFLIX) private readonly netflixClient: ClientProxy,
     @Inject(LOGGER_TOKEN) private readonly logger: Logger,
   ) {
     this.logger.info('Gateway Service initialized with TCP clients');
@@ -19,10 +19,10 @@ export class GatewayService {
 
   private getClient(serviceName: string): ClientProxy {
     switch (serviceName) {
-      case SERVICES.SERVICE1:
-        return this.service1Client;
-      case SERVICES.SERVICE2:
-        return this.service2Client;
+      case SERVICES.API_AUTH:
+        return this.apiAuthClient;
+      case SERVICES.NETFLIX:
+        return this.netflixClient;
       default:
         throw new Error(`Service ${serviceName} not found`);
     }

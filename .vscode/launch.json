@@ -28,12 +28,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug service1 with Nx",
+      "name": "Debug api-auth with Nx",
       "runtimeExecutable": "pnpm exec",
       "runtimeArgs": [
         "nx",
         "serve",
-        "service1"
+        "api-auth"
       ],
       "env": {
         "NODE_OPTIONS": "--inspect=9240"
@@ -45,19 +45,19 @@
       ],
       "sourceMaps": true,
       "outFiles": [
-        "${workspaceFolder}/apps/service1/dist/**/*.(m|c|)js",
+        "${workspaceFolder}/apps/api-auth/dist/**/*.(m|c|)js",
         "!**/node_modules/**"
       ]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug service2 with Nx",
+      "name": "Debug netflix with Nx",
       "runtimeExecutable": "pnpm exec",
       "runtimeArgs": [
         "nx",
         "serve",
-        "service2"
+        "netflix"
       ],
       "env": {
         "NODE_OPTIONS": "--inspect=9241"
@@ -69,7 +69,7 @@
       ],
       "sourceMaps": true,
       "outFiles": [
-        "${workspaceFolder}/apps/service2/dist/**/*.(m|c|)js",
+        "${workspaceFolder}/apps/netflix/dist/**/*.(m|c|)js",
         "!**/node_modules/**"
       ]
     }

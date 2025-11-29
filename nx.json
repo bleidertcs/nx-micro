@@ -45,8 +45,8 @@
       },
       "exclude": [
         "apps/api-gateway-e2e/**/*",
-        "apps/service1-e2e/**/*",
-        "apps/service2-e2e/**/*",
+        "apps/api-auth-e2e/**/*",
+        "apps/netflix-e2e/**/*",
         "apps/csv-processor-e2e/**/*"
       ]
     }

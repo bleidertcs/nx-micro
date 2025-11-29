@@ -345,23 +345,23 @@
           "implicitDependencies": []
         }
       },
-      "service1-e2e": {
-        "name": "service1-e2e",
+      "api-auth-e2e": {
+        "name": "api-auth-e2e",
         "type": "e2e",
         "data": {
-          "root": "apps/service1-e2e",
+          "root": "apps/api-auth-e2e",
           "targets": {
             "lint": {
               "cache": true,
               "options": {
-                "cwd": "apps/service1-e2e",
+                "cwd": "apps/api-auth-e2e",
                 "command": "eslint ."
               },
               "inputs": [
                 "default",
                 "^default",
                 "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/apps/service1-e2e/eslint.config.mjs",
+                "{workspaceRoot}/apps/api-auth-e2e/eslint.config.mjs",
                 "{workspaceRoot}/tools/eslint-rules/**/*",
                 {
                   "externalDependencies": [
@@ -396,43 +396,43 @@
                 "{workspaceRoot}/coverage/{e2eProjectRoot}"
               ],
               "options": {
-                "jestConfig": "apps/service1-e2e/jest.config.ts",
+                "jestConfig": "apps/api-auth-e2e/jest.config.ts",
                 "passWithNoTests": true
               },
               "dependsOn": [
-                "service1:build",
-                "service1:serve"
+                "api-auth:build",
+                "api-auth:serve"
               ],
               "configurations": {},
               "parallelism": true
             }
           },
-          "name": "service1-e2e",
+          "name": "api-auth-e2e",
           "$schema": "../../node_modules/nx/schemas/project-schema.json",
           "projectType": "application",
           "implicitDependencies": [
-            "service1"
+            "api-auth"
           ],
           "tags": []
         }
       },
-      "service2-e2e": {
-        "name": "service2-e2e",
+      "netflix-e2e": {
+        "name": "netflix-e2e",
         "type": "e2e",
         "data": {
-          "root": "apps/service2-e2e",
+          "root": "apps/netflix-e2e",
           "targets": {
             "lint": {
               "cache": true,
               "options": {
-                "cwd": "apps/service2-e2e",
+                "cwd": "apps/netflix-e2e",
                 "command": "eslint ."
               },
               "inputs": [
                 "default",
                 "^default",
                 "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/apps/service2-e2e/eslint.config.mjs",
+                "{workspaceRoot}/apps/netflix-e2e/eslint.config.mjs",
                 "{workspaceRoot}/tools/eslint-rules/**/*",
                 {
                   "externalDependencies": [
@@ -467,22 +467,22 @@
                 "{workspaceRoot}/coverage/{e2eProjectRoot}"
               ],
               "options": {
-                "jestConfig": "apps/service2-e2e/jest.config.ts",
+                "jestConfig": "apps/netflix-e2e/jest.config.ts",
                 "passWithNoTests": true
               },
               "dependsOn": [
-                "service2:build",
-                "service2:serve"
+                "netflix:build",
+                "netflix:serve"
               ],
               "configurations": {},
               "parallelism": true
             }
           },
-          "name": "service2-e2e",
+          "name": "netflix-e2e",
           "$schema": "../../node_modules/nx/schemas/project-schema.json",
           "projectType": "application",
           "implicitDependencies": [
-            "service2"
+            "netflix"
           ],
           "tags": []
         }
@@ -581,11 +581,11 @@
           "implicitDependencies": []
         }
       },
-      "service1": {
-        "name": "service1",
+      "api-auth": {
+        "name": "api-auth",
         "type": "app",
         "data": {
-          "root": "apps/service1",
+          "root": "apps/api-auth",
           "projectType": "application",
           "metadata": {},
           "targets": {
@@ -604,7 +604,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}/dist\\apps\\service1"
+                "{workspaceRoot}/dist\\apps\\api-auth"
               ],
               "metadata": {
                 "technologies": [
@@ -625,7 +625,7 @@
               },
               "executor": "nx:run-commands",
               "options": {
-                "cwd": "apps/service1",
+                "cwd": "apps/api-auth",
                 "args": [
                   "--node-env=production"
                 ],
@@ -648,15 +648,15 @@
                 "build"
               ],
               "options": {
-                "buildTarget": "service1:build",
+                "buildTarget": "api-auth:build",
                 "runBuildTargetDependencies": false
               },
               "configurations": {
                 "development": {
-                  "buildTarget": "service1:build:development"
+                  "buildTarget": "api-auth:build:development"
                 },
                 "production": {
-                  "buildTarget": "service1:build:production"
+                  "buildTarget": "api-auth:build:production"
                 }
               },
               "parallelism": true
@@ -664,7 +664,7 @@
             "preview": {
               "continuous": true,
               "options": {
-                "cwd": "apps/service1",
+                "cwd": "apps/api-auth",
                 "args": [
                   "--node-env=production"
                 ],
@@ -720,7 +720,7 @@
               ],
               "executor": "nx:run-commands",
               "options": {
-                "command": "pnpm exec nx watch --projects service1 --includeDependentProjects -- pnpm exec nx build-deps service1"
+                "command": "pnpm exec nx watch --projects api-auth --includeDependentProjects -- pnpm exec nx build-deps api-auth"
               },
               "configurations": {},
               "parallelism": true
@@ -728,14 +728,14 @@
             "lint": {
               "cache": true,
               "options": {
-                "cwd": "apps/service1",
+                "cwd": "apps/api-auth",
                 "command": "eslint ."
               },
               "inputs": [
                 "default",
                 "^default",
                 "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/apps/service1/eslint.config.mjs",
+                "{workspaceRoot}/apps/api-auth/eslint.config.mjs",
                 "{workspaceRoot}/tools/eslint-rules/**/*",
                 {
                   "externalDependencies": [
@@ -791,11 +791,11 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}\\coverage\\apps\\service1"
+                "{workspaceRoot}\\coverage\\apps\\api-auth"
               ],
               "executor": "nx:run-commands",
               "options": {
-                "cwd": "apps/service1",
+                "cwd": "apps/api-auth",
                 "env": {
                   "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
                 },
@@ -812,8 +812,8 @@
               "cache": true,
               "executor": "@nx/js:prune-lockfile",
               "outputs": [
-                "{workspaceRoot}/dist/apps/service1/package.json",
-                "{workspaceRoot}/dist/apps/service1/pnpm-lock.yaml"
+                "{workspaceRoot}/dist/apps/api-auth/package.json",
+                "{workspaceRoot}/dist/apps/api-auth/pnpm-lock.yaml"
               ],
               "options": {
                 "buildTarget": "build"
@@ -827,7 +827,7 @@
               ],
               "cache": true,
               "outputs": [
-                "{workspaceRoot}/dist/apps/service1/workspace_modules"
+                "{workspaceRoot}/dist/apps/api-auth/workspace_modules"
               ],
               "executor": "@nx/js:copy-workspace-modules",
               "options": {
@@ -847,18 +847,18 @@
               "parallelism": true
             }
           },
-          "name": "service1",
+          "name": "api-auth",
           "$schema": "../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "apps/service1/src",
+          "sourceRoot": "apps/api-auth/src",
           "tags": [],
           "implicitDependencies": []
         }
       },
-      "service2": {
-        "name": "service2",
+      "netflix": {
+        "name": "netflix",
         "type": "app",
         "data": {
-          "root": "apps/service2",
+          "root": "apps/netflix",
           "projectType": "application",
           "metadata": {},
           "targets": {
@@ -877,7 +877,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}/dist\\apps\\service2"
+                "{workspaceRoot}/dist\\apps\\netflix"
               ],
               "metadata": {
                 "technologies": [
@@ -898,7 +898,7 @@
               },
               "executor": "nx:run-commands",
               "options": {
-                "cwd": "apps/service2",
+                "cwd": "apps/netflix",
                 "args": [
                   "--node-env=production"
                 ],
@@ -921,15 +921,15 @@
                 "build"
               ],
               "options": {
-                "buildTarget": "service2:build",
+                "buildTarget": "netflix:build",
                 "runBuildTargetDependencies": false
               },
               "configurations": {
                 "development": {
-                  "buildTarget": "service2:build:development"
+                  "buildTarget": "netflix:build:development"
                 },
                 "production": {
-                  "buildTarget": "service2:build:production"
+                  "buildTarget": "netflix:build:production"
                 }
               },
               "parallelism": true
@@ -937,7 +937,7 @@
             "preview": {
               "continuous": true,
               "options": {
-                "cwd": "apps/service2",
+                "cwd": "apps/netflix",
                 "args": [
                   "--node-env=production"
                 ],
@@ -993,7 +993,7 @@
               ],
               "executor": "nx:run-commands",
               "options": {
-                "command": "pnpm exec nx watch --projects service2 --includeDependentProjects -- pnpm exec nx build-deps service2"
+                "command": "pnpm exec nx watch --projects netflix --includeDependentProjects -- pnpm exec nx build-deps netflix"
               },
               "configurations": {},
               "parallelism": true
@@ -1001,14 +1001,14 @@
             "lint": {
               "cache": true,
               "options": {
-                "cwd": "apps/service2",
+                "cwd": "apps/netflix",
                 "command": "eslint ."
               },
               "inputs": [
                 "default",
                 "^default",
                 "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/apps/service2/eslint.config.mjs",
+                "{workspaceRoot}/apps/netflix/eslint.config.mjs",
                 "{workspaceRoot}/tools/eslint-rules/**/*",
                 {
                   "externalDependencies": [
@@ -1064,11 +1064,11 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}\\coverage\\apps\\service2"
+                "{workspaceRoot}\\coverage\\apps\\netflix"
               ],
               "executor": "nx:run-commands",
               "options": {
-                "cwd": "apps/service2",
+                "cwd": "apps/netflix",
                 "env": {
                   "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
                 },
@@ -1085,8 +1085,8 @@
               "cache": true,
               "executor": "@nx/js:prune-lockfile",
               "outputs": [
-                "{workspaceRoot}/dist/apps/service2/package.json",
-                "{workspaceRoot}/dist/apps/service2/pnpm-lock.yaml"
+                "{workspaceRoot}/dist/apps/netflix/package.json",
+                "{workspaceRoot}/dist/apps/netflix/pnpm-lock.yaml"
               ],
               "options": {
                 "buildTarget": "build"
@@ -1100,7 +1100,7 @@
               ],
               "cache": true,
               "outputs": [
-                "{workspaceRoot}/dist/apps/service2/workspace_modules"
+                "{workspaceRoot}/dist/apps/netflix/workspace_modules"
               ],
               "executor": "@nx/js:copy-workspace-modules",
               "options": {
@@ -1120,9 +1120,9 @@
               "parallelism": true
             }
           },
-          "name": "service2",
+          "name": "netflix",
           "$schema": "../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "apps/service2/src",
+          "sourceRoot": "apps/netflix/src",
           "tags": [],
           "implicitDependencies": []
         }
@@ -1137,23 +1137,23 @@
         }
       ],
       "api-gateway": [],
-      "service1-e2e": [
+      "api-auth-e2e": [
         {
-          "source": "service1-e2e",
-          "target": "service1",
+          "source": "api-auth-e2e",
+          "target": "api-auth",
           "type": "implicit"
         }
       ],
-      "service2-e2e": [
+      "netflix-e2e": [
         {
-          "source": "service2-e2e",
-          "target": "service2",
+          "source": "netflix-e2e",
+          "target": "netflix",
           "type": "implicit"
         }
       ],
       "shared-lib": [],
-      "service1": [],
-      "service2": []
+      "api-auth": [],
+      "netflix": []
     }
   }
 }

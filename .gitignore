@@ -45,8 +45,8 @@ Thumbs.db
 
 # Prisma generated client
 libs/prisma-client/src/lib/generated/
-apps/service1/src/generated/
-apps/service2/src/generated/
+apps/api-auth/src/generated/
+apps/netflix/src/generated/
 
 # OTEL Collector binaries
 signoz-config/collectors/windows/otelcol-contrib_0.114.0_windows_amd64/otelcol-contrib.exe
@@ -10053,8 +10053,8 @@ node_modules/@opentelemetry/exporter-logs-otlp-proto/build/esnext/platform/node/
 
 # Prisma generated client
 libs/prisma-client/src/lib/generated/
-apps/service1/src/generated/
-apps/service2/src/generated/
+apps/api-auth/src/generated/
+apps/netflix/src/generated/
 
 # OTEL Collector binaries
 **/otelcol-contrib.exe

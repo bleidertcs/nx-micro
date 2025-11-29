@@ -3,19 +3,19 @@ import { TCP_CONFIG, SERVICES } from './constants';
 
 export const microservicesConfig = ClientsModule.register([
   {
-    name: SERVICES.SERVICE1,
+    name: SERVICES.API_AUTH,
     transport: Transport.TCP,
     options: {
       host: TCP_CONFIG.HOST,
-      port: TCP_CONFIG.PORTS.SERVICE1,
+      port: TCP_CONFIG.PORTS.API_AUTH,
     },
   },
   {
-    name: SERVICES.SERVICE2,
+    name: SERVICES.NETFLIX,
     transport: Transport.TCP,
     options: {
       host: TCP_CONFIG.HOST,
-      port: TCP_CONFIG.PORTS.SERVICE2,
+      port: TCP_CONFIG.PORTS.NETFLIX,
     },
   },
   {

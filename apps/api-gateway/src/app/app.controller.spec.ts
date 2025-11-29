@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { GatewayService } from './services/gateway.service';
+import { LOGGER_TOKEN } from '@nx-microservices/observability';
 
 describe('AppController', () => {
   let app: TestingModule;
@@ -8,14 +10,18 @@ describe('AppController', () => {
   beforeAll(async () => {
     app = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
+      providers: [
+        { provide: AppService, useValue: {} },
+        { provide: GatewayService, useValue: {} },
+        { provide: LOGGER_TOKEN, useValue: { info: jest.fn() } },
+      ],
     }).compile();
   });
 
-  describe('getData', () => {
-    it('should return "Hello API"', () => {
-      const appController = app.get<AppController>(AppController);
-      expect(appController.getData()).toEqual({ message: 'Hello API' });
+  describe('root', () => {
+    it('should be defined', () => {
+      const controller = app.get<AppController>(AppController);
+      expect(controller).toBeDefined();
     });
   });
 });

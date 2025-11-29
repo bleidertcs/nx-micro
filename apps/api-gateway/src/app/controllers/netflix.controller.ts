@@ -6,10 +6,10 @@ import { UpdateNetflixShowDto } from '../dtos/update-netflix-show.dto';
 import { SERVICES } from '../../config/constants';
 
 @ApiTags('Netflix')
-@Controller('services/service2/netflix')
+@Controller('services/netflix/netflix')
 export class NetflixController {
     constructor(
-        @Inject(SERVICES.SERVICE2) private readonly client: ClientProxy,
+        @Inject(SERVICES.NETFLIX) private readonly client: ClientProxy,
     ) { }
 
     @Post()

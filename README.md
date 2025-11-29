@@ -29,10 +29,46 @@ El proyecto utiliza un archivo `.env` para gestionar las variables de entorno. C
 OTEL_SERVICE_NAME=microservices
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 
+## 3. Servicio de Autenticación (api-auth)
+
+El servicio `api-auth` es responsable de la autenticación de usuarios. Provee registro, inicio de sesión, generación y validación de JWT, manejo de refresh tokens y obtención del perfil del usuario.
+
+### Funcionalidades clave
+- **Registro de usuarios**: Hash de contraseñas con bcrypt.
+- **Login**: Emite un token de acceso (corto) y un refresh token (largo).
+- **Validación de token**: Verifica la firma y expiración del JWT.
+- **Refresh**: Renueva el token de acceso y rota el refresh token.
+- **Perfil**: Devuelve datos del usuario sin la contraseña.
+
+### Variables de entorno requeridas
+```
+JWT_SECRET=your-super-secret-jwt-key-change-in-production-please-use-a-strong-random-string
+JWT_ACCESS_EXPIRATION=15m   # tiempo de vida del token de acceso
+JWT_REFRESH_EXPIRATION=7d   # tiempo de vida del refresh token
+```
+Asegúrate de definir estas variables en el archivo `.env`.
+
+### Ejecución
+```bash
+# Desde la raíz del proyecto
+pnpm start:dev api-auth
+```
+Esto iniciará el microservicio de autenticación escuchando en el puerto definido por `PORT_APIAUTH` en el `.env`.
+
+### Endpoints expuestos vía API Gateway
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/refresh`
+- `POST /auth/validate`
+- `GET /auth/profile`
+
+Los endpoints están documentados en Swagger bajo la etiqueta **Auth**.
+
+
 # Service Ports
 PORT_GATEWAY=3000
-PORT_SERVICE1=3001
-PORT_SERVICE2=3002
+PORT_APIAUTH=3001
+PORT_NETFLIX=3002
 
 
 pnpm start:all
@@ -114,28 +150,28 @@ curl -X GET http://localhost:3000/api/services/health
 
 #### Obtener estado de un servicio específico
 ```bash
-# Para service1
-curl -X GET http://localhost:3000/api/services/service1/health
+# Para api-auth
+curl -X GET http://localhost:3000/api/services/api-auth/health
 
-# Para service2
-curl -X GET http://localhost:3000/api/services/service2/health
+# Para netflix
+curl -X GET http://localhost:3000/api/services/netflix/health
 ```
 
 ### 7.2. Endpoints de Ejemplo
 
 #### Obtener saludo de un servicio
 ```bash
-# Obtener saludo de service1
-curl -X GET http://localhost:3000/api/services/service1/hello
+# Obtener saludo de api-auth
+curl -X GET http://localhost:3000/api/services/api-auth/hello
 
-# Obtener saludo de service2
-curl -X GET http://localhost:3000/api/services/service2/hello
+# Obtener saludo de netflix
+curl -X GET http://localhost:3000/api/services/netflix/hello
 ```
 
 #### Probar manejo de errores
 ```bash
-# Generar un error en service1
-curl -X GET http://localhost:3000/api/services/service1/error
+# Generar un error en api-auth
+curl -X GET http://localhost:3000/api/services/api-auth/error
 ```
 
 #### Procesar archivo CSV
@@ -147,7 +183,7 @@ curl -X POST http://localhost:3000/api/csv/process
 #### Comandos personalizados
 ```bash
 # Enviar comando a un servicio
-curl -X POST http://localhost:3000/api/services/service1/ejemplo \
+curl -X POST http://localhost:3000/api/services/api-auth/ejemplo \
   -H "Content-Type: application/json" \
   -d '{"param1": "valor1", "param2": "valor2"}'
 ```

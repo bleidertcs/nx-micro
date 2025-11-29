@@ -57,20 +57,22 @@
       "executor": "nx:noop"
     },
     "serve": {
-      "executor": "nx:run-commands",
+      "continuous": true,
+      "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "dependsOn": [
         "build"
       ],
       "options": {
-        "command": "node -r dotenv/config ./dist/apps/csv-processor/main.js"
+        "buildTarget": "csv-processor:build",
+        "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "command": "node -r dotenv/config ./dist/apps/csv-processor/main.js"
+          "buildTarget": "csv-processor:build:development"
         },
         "production": {
-          "command": "node -r dotenv/config ./dist/apps/csv-processor/main.js"
+          "buildTarget": "csv-processor:build:production"
         }
       }
     },
