@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GatewayController } from './controllers/gateway.controller';
@@ -14,6 +16,10 @@ import { AuthController } from './controllers/auth.controller';
   imports: [
     ObservabilityModule.forRoot('api-gateway'),
     microservicesConfig,
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10,
+    }]),
   ],
   controllers: [
     AppController,
@@ -22,6 +28,12 @@ import { AuthController } from './controllers/auth.controller';
     NetflixController,
     AuthController,
   ],
-  providers: providersConfig,
+  providers: [
+    ...providersConfig,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule { }

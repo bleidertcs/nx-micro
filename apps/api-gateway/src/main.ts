@@ -4,6 +4,7 @@
  */
 
 import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { SwaggerModule } from '@nestjs/swagger';
@@ -34,6 +35,9 @@ async function bootstrap() {
     whitelist: true,
     forbidNonWhitelisted: true,
   }));
+
+  // Enable Helmet for security headers
+  app.use(helmet());
 
   // Enable CORS for API Gateway
   app.enableCors({
