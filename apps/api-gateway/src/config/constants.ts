@@ -4,12 +4,6 @@ export const SERVICES = {
   CSV_SERVICE: 'CSV_SERVICE',
 } as const;
 
-export const COMMANDS = {
-  HELLO: 'hello',
-  HEALTH: 'health',
-  ERROR: 'error',
-} as const;
-
 export const TCP_CONFIG = {
   HOST: process.env.SERVICE_HOST || '127.0.0.1',
   PORTS: {
