@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js" // Keep prisma-client-js for now, will change to prisma-client if needed later
-  output   = "../src/lib/generated/prisma-client-lib"
+  output   = "../../../node_modules/@prisma/client-test-micro"
 }
 
 datasource db {

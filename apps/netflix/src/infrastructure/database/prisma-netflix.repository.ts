@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import {
-  PrismaClient,
   NetflixShow as PrismaNetflixShow,
   Prisma,
-} from '@nx-microservices/prisma-netflix';
+} from '@prisma/client-netflix';
+import { PrismaNetflixService } from '@nx-microservices/prisma-netflix';
 import { NetflixShow } from '../../domain/entities/netflix-show.entity';
 import {
   NetflixShowRepository,
@@ -14,11 +14,10 @@ import { Logger } from 'winston';
 
 @Injectable()
 export class PrismaNetflixRepository implements NetflixShowRepository {
-  private prisma: PrismaClient;
-
-  constructor(@Inject(LOGGER_TOKEN) private readonly logger: Logger) {
-    this.prisma = new PrismaClient();
-  }
+  constructor(
+    @Inject(LOGGER_TOKEN) private readonly logger: Logger,
+    private readonly prisma: PrismaNetflixService
+  ) {}
 
   async create(show: NetflixShow): Promise<NetflixShow> {
     this.logger.info(`Creating Netflix show: ${show.show_id}`);

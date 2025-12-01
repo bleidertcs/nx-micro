@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ObservabilityModule } from '@nx-microservices/observability';
-import { PrismaClientModule } from '@nx-microservices/prisma-client';
+import { PrismaNetflixModule } from '@nx-microservices/prisma-netflix';
 import { NetflixController } from '../infrastructure/http/controllers/netflix.controller';
 import { PrismaNetflixRepository } from '../infrastructure/database/prisma-netflix.repository';
 import { CreateNetflixShowUseCase } from '../application/use-cases/create-netflix-show.use-case';
@@ -11,7 +11,7 @@ import { DeleteNetflixShowUseCase } from '../application/use-cases/delete-netfli
 import { NETFLIX_SHOW_REPOSITORY } from '../config/constants';
 
 @Module({
-  imports: [ObservabilityModule.forRoot('netflix'), PrismaClientModule],
+  imports: [ObservabilityModule.forRoot('netflix'), PrismaNetflixModule],
   controllers: [NetflixController],
   providers: [
     PrismaNetflixRepository,

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { PrismaClient } from '@nx-microservices/prisma-client';
+import { PrismaClient } from '@nx-microservices/test_micro';
 import * as fs from 'fs';
 import * as path from 'path';
 

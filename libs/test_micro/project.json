@@ -1,0 +1,9 @@
+{
+  "name": "test_micro",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/test_micro/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project test_micro --web",
+  "targets": {}
+}

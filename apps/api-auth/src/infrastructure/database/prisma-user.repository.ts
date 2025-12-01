@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { PrismaService } from '@nx-microservices/prisma-client';
+import { PrismaService } from '@nx-microservices/test_micro';
 import { UserRepository } from '../../domain/repositories/user.repository.interface';
 import { User } from '../../domain/entities/user.entity';
 import { LOGGER_TOKEN } from '@nx-microservices/observability';

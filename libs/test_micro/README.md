@@ -1,4 +1,4 @@
-# Prisma Client Library
+# TestMicro Library
 
 Librería compartida que proporciona el cliente Prisma para la base de datos principal (`test_micro`). Esta librería centraliza la configuración de Prisma y proporciona un servicio NestJS para acceso a la base de datos.
 
@@ -13,7 +13,7 @@ Librería compartida que proporciona el cliente Prisma para la base de datos pri
 
 ## 🎯 Descripción
 
-La librería `@nx-microservices/prisma-client` es una librería compartida que:
+La librería `@nx-microservices/test_micro` es una librería compartida que:
 
 - Define el esquema de Prisma para la base de datos principal (`test_micro`)
 - Genera el cliente Prisma type-safe
@@ -39,6 +39,7 @@ model User {
 ```
 
 **Campos**:
+
 - `id`: ID único del usuario (CUID)
 - `email`: Email único del usuario
 - `password`: Contraseña hasheada
@@ -63,6 +64,7 @@ model RefreshToken {
 ```
 
 **Campos**:
+
 - `id`: ID único del token (CUID)
 - `token`: Token de refresco (único)
 - `userId`: ID del usuario propietario
@@ -71,6 +73,7 @@ model RefreshToken {
 - `createdAt`: Fecha de creación
 
 **Relación**:
+
 - `onDelete: Cascade` - Si se elimina el usuario, se eliminan sus tokens
 
 ### Review
@@ -87,6 +90,7 @@ model Review {
 ```
 
 **Campos**:
+
 - `id`: ID único (auto-incremento)
 - `rating`: Calificación (1-5)
 - `title`: Título de la reseña
@@ -112,7 +116,7 @@ model Example {
 En el `app.module.ts` de tu servicio:
 
 ```typescript
-import { PrismaClientModule } from '@nx-microservices/prisma-client';
+import { PrismaClientModule } from '@nx-microservices/test_micro';
 
 @Module({
   imports: [
@@ -130,7 +134,7 @@ Inyecta `PrismaService` en tus servicios o repositorios:
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@nx-microservices/prisma-client';
+import { PrismaService } from '@nx-microservices/test_micro';
 
 @Injectable()
 export class UserRepository {
@@ -219,9 +223,10 @@ DATABASE_URL=postgresql://postgres:root@localhost:5432/test_micro?schema=public
 
 ### Esquema de Prisma
 
-El esquema se encuentra en: `libs/prisma-client/prisma/schema.prisma`
+El esquema se encuentra en: `libs/test_micro/prisma/schema.prisma`
 
 **Configuración del generador**:
+
 ```prisma
 generator client {
   provider = "prisma-client-js"
@@ -230,6 +235,7 @@ generator client {
 ```
 
 **Configuración del datasource**:
+
 ```prisma
 datasource db {
   provider = "postgresql"
@@ -242,10 +248,11 @@ datasource db {
 ### Crear una Nueva Migración
 
 ```bash
-pnpm prisma:migrate:dev
+pnpm prisma:test_micro:migrate
 ```
 
 Este comando:
+
 1. Detecta cambios en el esquema
 2. Crea una nueva migración
 3. Aplica la migración a la base de datos
@@ -276,26 +283,27 @@ npx prisma migrate status
 Después de cambiar el esquema, regenera el cliente:
 
 ```bash
-pnpm prisma:generate
+pnpm prisma:test_micro:generate
 ```
 
 O directamente:
 
 ```bash
-npx prisma generate --schema=libs/prisma-client/prisma/schema.prisma
+npx prisma generate --schema=libs/test_micro/prisma/schema.prisma
 ```
 
 ### Ubicación del Cliente Generado
 
 El cliente se genera en:
+
 ```
-libs/prisma-client/src/lib/generated/prisma-client-lib/
+libs/test_micro/src/lib/generated/prisma-client-lib/
 ```
 
 ## 📦 Estructura
 
 ```
-libs/prisma-client/
+libs/test_micro/
 ├── prisma/
 │   ├── schema.prisma          # Esquema de Prisma
 │   └── migrations/            # Migraciones de base de datos
@@ -315,6 +323,7 @@ libs/prisma-client/
 El `PrismaService` extiende `PrismaClient` y se conecta automáticamente cuando el módulo se inicializa.
 
 **Características**:
+
 - Se conecta automáticamente en `onModuleInit`
 - Type-safe: Todas las queries están tipadas
 - Instrumentación: Compatible con OpenTelemetry para observabilidad

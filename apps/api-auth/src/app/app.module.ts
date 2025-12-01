@@ -3,7 +3,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { ObservabilityModule } from '@nx-microservices/observability';
-import { PrismaClientModule } from '@nx-microservices/prisma-client';
+import { PrismaClientModule } from '@nx-microservices/test_micro';
 import { RpcCustomExceptionFilter } from '@nx-microservices/shared-lib';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';

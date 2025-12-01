@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { ObservabilityModule } from '@nx-microservices/observability';
-import { PrismaClientModule } from '@nx-microservices/prisma-client';
+import { PrismaClientModule } from '@nx-microservices/test_micro';
 import { RpcCustomExceptionFilter } from '@nx-microservices/shared-lib';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';

@@ -1,2 +1,2 @@
-export * from '../../../node_modules/@prisma/client-netflix';
-
+export * from './lib/prisma-netflix.module';
+export * from './lib/prisma-netflix.service';

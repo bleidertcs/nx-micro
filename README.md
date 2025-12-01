@@ -6,21 +6,21 @@ Arquitectura de microservicios de producción construida con Nx monorepo, NestJS
 
 ## 📋 Tabla de Contenidos
 
-- [Descripción General](#descripción-general)
-- [Arquitectura del Sistema](#arquitectura-del-sistema)
-- [Stack Tecnológico](#stack-tecnológico)
-- [Estructura del Repositorio](#estructura-del-repositorio)
-- [Servicios Principales](#servicios-principales)
-- [Librerías Compartidas](#librerías-compartidas)
-- [Inicio Rápido](#inicio-rápido)
-- [Configuración del Entorno](#configuración-del-entorno)
-- [Cómo Funciona la Comunicación](#cómo-funciona-la-comunicación)
-- [Crear una Nueva API](#crear-una-nueva-api)
-- [Crear una Nueva Librería](#crear-una-nueva-librería)
-- [Scripts Disponibles](#scripts-disponibles)
-- [Testing](#testing)
-- [Observabilidad](#observabilidad)
-- [Documentación de APIs](#documentación-de-apis)
+- [Descripción General](#-descripción-general)
+- [Arquitectura del Sistema](#️-arquitectura-del-sistema)
+- [Stack Tecnológico](#️-stack-tecnológico)
+- [Estructura del Repositorio](#-estructura-del-repositorio)
+- [Servicios Principales](#-servicios-principales)
+- [Librerías Compartidas](#-librerías-compartidas)
+- [Inicio Rápido](#-inicio-rápido)
+- [Configuración del Entorno](#️-configuración-del-entorno)
+- [Cómo Funciona la Comunicación](#-cómo-funciona-la-comunicación)
+- [Crear una Nueva API](#-crear-una-nueva-api)
+- [Crear una Nueva Librería](#-crear-una-nueva-librería)
+- [Scripts Disponibles](#-scripts-disponibles)
+- [Testing](#-testing)
+- [Observabilidad](#-observabilidad)
+- [Documentación de APIs](#-documentación-de-apis)
 
 ## 🎯 Descripción General
 
@@ -37,22 +37,22 @@ Este proyecto implementa una arquitectura de microservicios con las siguientes c
 ```mermaid
 graph TB
     Client[Cliente / Frontend] -->|HTTP/REST :3000| Gateway[API Gateway<br/>Puerto 3000<br/>Rate Limiting<br/>JWT Auth<br/>Swagger]
-    
+
     Gateway -->|TCP :3001| Auth[api-auth<br/>Puerto 3001<br/>Autenticación<br/>JWT<br/>Usuarios]
     Gateway -->|TCP :3002| Netflix[netflix<br/>Puerto 3002<br/>CRUD Shows<br/>Búsqueda<br/>Filtrado]
     Gateway -->|TCP :3003| CSV[csv-processor<br/>Puerto 3003<br/>Upload CSV<br/>Procesamiento<br/>Batch]
-    
+
     Auth -->|Prisma| DB1[(test_micro<br/>PostgreSQL)]
     Netflix -->|Prisma| DB2[(netflix_shows<br/>PostgreSQL)]
     CSV -->|Prisma| DB1
-    
+
     Gateway -.->|Traces/Metrics/Logs| OTel[OpenTelemetry<br/>Collector<br/>:4318]
     Auth -.->|Traces/Metrics/Logs| OTel
     Netflix -.->|Traces/Metrics/Logs| OTel
     CSV -.->|Traces/Metrics/Logs| OTel
-    
+
     OTel -->|Export| SigNoz[SigNoz<br/>:8080<br/>Visualización]
-    
+
     style Gateway fill:#4a90e2,stroke:#2c5aa0,color:#fff
     style Auth fill:#50c878,stroke:#2d7a4a,color:#fff
     style Netflix fill:#ff6b6b,stroke:#cc5555,color:#fff
@@ -71,9 +71,9 @@ sequenceDiagram
     participant N as netflix
     participant DB as Base de Datos
     participant OTel as OpenTelemetry
-    
+
     Note over C,OTel: Flujo de Petición HTTP → TCP → Base de Datos
-    
+
     C->>G: HTTP POST /api/auth/login
     G->>G: Rate Limiting Check
     G->>G: Validar Request
@@ -85,7 +85,7 @@ sequenceDiagram
     A->>DB: Save Refresh Token
     A-->>G: {accessToken, refreshToken, user}
     G-->>C: HTTP 200 {tokens, user}
-    
+
     Note over G,OTel: Observabilidad
     G->>OTel: Trace: HTTP Request
     A->>OTel: Trace: TCP Command
@@ -99,17 +99,17 @@ sequenceDiagram
 
 ## 🛠️ Stack Tecnológico
 
-| Tecnología | Versión | Propósito | Paquetes Clave |
-|------------|---------|-----------|----------------|
-| **Nx** | 22.0.2 | Herramientas de monorepo, sistema de build, gestión de grafo de dependencias | `nx`, `@nx/nest`, `@nx/node`, `@nx/webpack` |
-| **NestJS** | 11.1.9 | Framework de microservicios, inyección de dependencias, decoradores | `@nestjs/core`, `@nestjs/microservices`, `@nestjs/platform-express` |
-| **TypeScript** | 5.9.3 | Lenguaje type-safe, definiciones de tipos compartidas entre servicios | `typescript`, `ts-node`, `tslib` |
-| **Prisma** | 5.22.0 | Cliente de base de datos type-safe, gestión de esquemas, migraciones | `@prisma/client`, `prisma`, `@prisma/instrumentation` |
-| **PostgreSQL** | N/A | Base de datos relacional, dos bases de datos separadas para aislamiento de dominio | Contenedores Docker en puerto 5432 |
-| **OpenTelemetry** | 1.9.0 (API)<br>0.208.0 (SDK) | Trazado distribuido, métricas, logs, instrumentación de observabilidad | `@opentelemetry/api`, `@opentelemetry/sdk-node`, `@opentelemetry/auto-instrumentations-node` |
-| **JWT** | 11.0.1 | Autenticación stateless, seguridad basada en tokens | `@nestjs/jwt`, `bcrypt` (6.0.0) |
-| **Swagger** | 11.2.3 | Documentación de API, explorador interactivo de API | `@nestjs/swagger`, `swagger-ui-express` |
-| **pnpm** | Latest | Gestor de paquetes, gestión de workspace | Lockfile: `pnpm-lock.yaml` |
+| Tecnología        | Versión                      | Propósito                                                                          | Paquetes Clave                                                                               |
+| ----------------- | ---------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Nx**            | 22.0.2                       | Herramientas de monorepo, sistema de build, gestión de grafo de dependencias       | `nx`, `@nx/nest`, `@nx/node`, `@nx/webpack`                                                  |
+| **NestJS**        | 11.1.9                       | Framework de microservicios, inyección de dependencias, decoradores                | `@nestjs/core`, `@nestjs/microservices`, `@nestjs/platform-express`                          |
+| **TypeScript**    | 5.9.3                        | Lenguaje type-safe, definiciones de tipos compartidas entre servicios              | `typescript`, `ts-node`, `tslib`                                                             |
+| **Prisma**        | 5.22.0                       | Cliente de base de datos type-safe, gestión de esquemas, migraciones               | `@prisma/client`, `prisma`, `@prisma/instrumentation`                                        |
+| **PostgreSQL**    | N/A                          | Base de datos relacional, dos bases de datos separadas para aislamiento de dominio | Contenedores Docker en puerto 5432                                                           |
+| **OpenTelemetry** | 1.9.0 (API)<br>0.208.0 (SDK) | Trazado distribuido, métricas, logs, instrumentación de observabilidad             | `@opentelemetry/api`, `@opentelemetry/sdk-node`, `@opentelemetry/auto-instrumentations-node` |
+| **JWT**           | 11.0.1                       | Autenticación stateless, seguridad basada en tokens                                | `@nestjs/jwt`, `bcrypt` (6.0.0)                                                              |
+| **Swagger**       | 11.2.3                       | Documentación de API, explorador interactivo de API                                | `@nestjs/swagger`, `swagger-ui-express`                                                      |
+| **pnpm**          | Latest                       | Gestor de paquetes, gestión de workspace                                           | Lockfile: `pnpm-lock.yaml`                                                                   |
 
 ## 📁 Estructura del Repositorio
 
@@ -123,7 +123,7 @@ nx-microservices/
 │   └── *-e2e/                # Tests end-to-end para cada servicio
 ├── libs/
 │   ├── observability/        # Librería de observabilidad OpenTelemetry
-│   ├── prisma-client/        # Cliente Prisma para base de datos principal
+│   ├── test_micro/           # Cliente Prisma para base de datos principal
 │   ├── prisma-netflix/       # Cliente Prisma para base de datos Netflix
 │   └── shared-lib/           # Utilidades y helpers compartidos
 ├── docs/                     # Documentación adicional
@@ -190,18 +190,19 @@ Pipeline de procesamiento asíncrono de archivos CSV:
 
 El monorepo incluye cuatro librerías compartidas que promueven la reutilización de código:
 
-| Librería | Nombre del Paquete | Propósito | Usado Por |
-|----------|-------------------|-----------|-----------|
-| `libs/observability` | `@nx-microservices/observability` | Función de inicialización de OpenTelemetry `initObservability()` | Todos los servicios |
-| `libs/prisma-client` | `@nx-microservices/prisma-client` | Cliente Prisma para base de datos `test_micro` | api-auth, csv-processor |
-| `libs/prisma-netflix` | `@nx-microservices/prisma-netflix` | Cliente Prisma para base de datos `netflix_shows` | netflix |
-| `libs/shared-lib` | `@nx-microservices/shared-lib` | Utilidades y helpers comunes | api-gateway |
+| Librería              | Nombre del Paquete                 | Propósito                                                        | Usado Por               |
+| --------------------- | ---------------------------------- | ---------------------------------------------------------------- | ----------------------- |
+| `libs/observability`  | `@nx-microservices/observability`  | Función de inicialización de OpenTelemetry `initObservability()` | Todos los servicios     |
+| `libs/test_micro`     | `@nx-microservices/test_micro`     | Cliente Prisma para base de datos `test_micro`                   | api-auth, csv-processor |
+| `libs/prisma-netflix` | `@nx-microservices/prisma-netflix` | Cliente Prisma para base de datos `netflix_shows`                | netflix                 |
+| `libs/shared-lib`     | `@nx-microservices/shared-lib`     | Utilidades y helpers comunes                                     | api-gateway             |
 
 La librería `observability` es particularmente crítica ya que centraliza la configuración de OpenTelemetry. Cada servicio importa y llama a `initObservability()` durante el bootstrap para habilitar trazado distribuido, recolección de métricas y correlación de logs.
 
 📖 **Documentación detallada de cada librería**:
+
 - [libs/observability/README.md](libs/observability/README.md)
-- [libs/prisma-client/README.md](libs/prisma-client/README.md)
+- [libs/test_micro/README.md](libs/test_micro/README.md)
 - [libs/prisma-netflix/README.md](libs/prisma-netflix/README.md)
 - [libs/shared-lib/README.md](libs/shared-lib/README.md)
 
@@ -218,40 +219,47 @@ Asegúrate de tener instalado lo siguiente:
 ### Instalación
 
 1. **Clonar el repositorio**:
+
 ```bash
 git clone <repository-url>
 cd nx-microservices
 ```
 
 2. **Instalar dependencias**:
+
 ```bash
 pnpm install
 ```
 
 3. **Configurar variables de entorno**:
-Crea un archivo `.env` en la raíz del proyecto. Ver sección [Configuración del Entorno](#configuración-del-entorno).
+   Crea un archivo `.env` en la raíz del proyecto. Ver sección [Configuración del Entorno](#configuración-del-entorno).
 
 4. **Iniciar bases de datos y servicios de observabilidad**:
+
 ```bash
 docker-compose up -d
 ```
 
 5. **Aplicar migraciones de base de datos**:
+
 ```bash
 # Base de datos principal
-pnpm prisma:migrate:dev
+pnpm prisma:test_micro:migrate
 
 # Base de datos Netflix
-npx prisma db push --schema=libs/prisma-netflix/prisma/schema.prisma
+pnpm prisma:netflix:migrate
+# Seed de datos (Netflix)
 npx ts-node --project libs/prisma-netflix/tsconfig.seed.json libs/prisma-netflix/seed.ts
 ```
 
 6. **Iniciar todos los servicios**:
+
 ```bash
 pnpm start:all
 ```
 
 Los servicios estarán disponibles en:
+
 - API Gateway: http://localhost:3000/api
 - Swagger UI: http://localhost:3000/api/docs
 - SigNoz: http://localhost:8080
@@ -306,32 +314,32 @@ graph LR
         Client2[TCP Client<br/>netflix]
         Client3[TCP Client<br/>csv-processor]
     end
-    
+
     subgraph "Microservicios"
         Auth[api-auth<br/>:3001]
         Netflix[netflix<br/>:3002]
         CSV[csv-processor<br/>:3003]
     end
-    
+
     Controller -->|1. Recibe HTTP| Service
     Service -->|2. Selecciona Cliente| Client1
     Service -->|2. Selecciona Cliente| Client2
     Service -->|3. Selecciona Cliente| Client3
-    
+
     Client1 -->|4. TCP Command| Auth
     Client2 -->|4. TCP Command| Netflix
     Client3 -->|4. TCP Command| CSV
-    
+
     Auth -->|5. Response| Client1
     Netflix -->|5. Response| Client2
     CSV -->|5. Response| Client3
-    
+
     Client1 -->|6. Transforma| Service
     Client2 -->|6. Transforma| Service
     Client3 -->|6. Transforma| Service
-    
+
     Service -->|7. HTTP Response| Controller
-    
+
     style Service fill:#4a90e2,stroke:#2c5aa0,color:#fff
     style Auth fill:#50c878,stroke:#2d7a4a,color:#fff
     style Netflix fill:#ff6b6b,stroke:#cc5555,color:#fff
@@ -339,6 +347,7 @@ graph LR
 ```
 
 1. **Configuración de Clientes TCP** (`apps/api-gateway/src/config/microservices.config.ts`):
+
 ```typescript
 export const microservicesConfig = ClientsModule.register([
   {
@@ -354,21 +363,23 @@ export const microservicesConfig = ClientsModule.register([
 ```
 
 2. **Envío de Comandos** (`apps/api-gateway/src/app/services/gateway.service.ts`):
+
 ```typescript
 async sendCommand(serviceName: string, pattern: string, data?: any) {
   const client = this.getClient(serviceName);
   const command = { cmd: pattern };
-  
+
   await client.connect();
   const response = await firstValueFrom(
     client.send(command, payload).pipe(timeout(TCP_CONFIG.TIMEOUT))
   );
-  
+
   return response;
 }
 ```
 
 3. **Recepción en Microservicios** (`apps/api-auth/src/app/app.controller.ts`):
+
 ```typescript
 @MessagePattern({ cmd: 'auth.register' })
 async register(@Payload() data: { email: string; password: string; name: string }) {
@@ -409,20 +420,17 @@ async function bootstrap() {
   // Inicializar observabilidad
   initObservability('mi-nuevo-servicio');
 
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.TCP,
-      options: {
-        host: '127.0.0.1',
-        port: 3004, // Puerto único para tu servicio
-      },
-    }
-  );
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+    transport: Transport.TCP,
+    options: {
+      host: '127.0.0.1',
+      port: 3004, // Puerto único para tu servicio
+    },
+  });
 
   app.useGlobalFilters(new RpcCustomExceptionFilter());
   await app.listen();
-  
+
   Logger.log(`🚀 Mi Nuevo Servicio running on TCP port: 3004`);
 }
 
@@ -432,6 +440,7 @@ bootstrap();
 ### 3. Agregar al API Gateway
 
 1. **Agregar constante de servicio** (`apps/api-gateway/src/config/constants.ts`):
+
 ```typescript
 export const SERVICES = {
   // ... servicios existentes
@@ -448,6 +457,7 @@ export const TCP_CONFIG = {
 ```
 
 2. **Registrar cliente TCP** (`apps/api-gateway/src/config/microservices.config.ts`):
+
 ```typescript
 export const microservicesConfig = ClientsModule.register([
   // ... clientes existentes
@@ -463,6 +473,7 @@ export const microservicesConfig = ClientsModule.register([
 ```
 
 3. **Inyectar en GatewayService** (`apps/api-gateway/src/app/services/gateway.service.ts`):
+
 ```typescript
 constructor(
   // ... clientes existentes
@@ -471,6 +482,7 @@ constructor(
 ```
 
 4. **Agregar al método getClient**:
+
 ```typescript
 private getClient(serviceName: string): ClientProxy {
   switch (serviceName) {
@@ -484,25 +496,23 @@ private getClient(serviceName: string): ClientProxy {
 ```
 
 5. **Crear controlador en Gateway** (`apps/api-gateway/src/app/controllers/mi-nuevo-servicio.controller.ts`):
+
 ```typescript
 @ApiTags('Mi Nuevo Servicio')
 @Controller('mi-nuevo-servicio')
 export class MiNuevoServicioController {
-  constructor(
-    @Inject(SERVICES.MI_NUEVO_SERVICIO) private readonly client: ClientProxy
-  ) {}
+  constructor(@Inject(SERVICES.MI_NUEVO_SERVICIO) private readonly client: ClientProxy) {}
 
   @Get()
   @ApiOperation({ summary: 'Ejemplo de endpoint' })
   async ejemplo() {
-    return firstValueFrom(
-      this.client.send({ cmd: 'mi-nuevo-servicio.ejemplo' }, {})
-    );
+    return firstValueFrom(this.client.send({ cmd: 'mi-nuevo-servicio.ejemplo' }, {}));
   }
 }
 ```
 
 6. **Registrar en AppModule** (`apps/api-gateway/src/app/app.module.ts`):
+
 ```typescript
 import { MiNuevoServicioController } from './controllers/mi-nuevo-servicio.controller';
 
@@ -519,6 +529,7 @@ export class AppModule {}
 ### 4. Agregar Variables de Entorno
 
 Agrega al archivo `.env`:
+
 ```env
 PORT_MI_NUEVO_SERVICIO=3004
 ```
@@ -526,6 +537,7 @@ PORT_MI_NUEVO_SERVICIO=3004
 ### 5. Agregar Scripts
 
 Agrega al `package.json`:
+
 ```json
 {
   "scripts": {
@@ -552,6 +564,7 @@ npx nx generate @nx/js:library mi-nueva-lib
 ### 2. Configurar Path Mapping
 
 Agrega al `tsconfig.base.json`:
+
 ```json
 {
   "compilerOptions": {
@@ -565,6 +578,7 @@ Agrega al `tsconfig.base.json`:
 ### 3. Exportar desde index.ts
 
 Edita `libs/mi-nueva-lib/src/index.ts`:
+
 ```typescript
 export * from './lib/mi-nueva-lib';
 // Exporta otros módulos según sea necesario
@@ -603,17 +617,21 @@ pnpm build:csv-processor
 ### Base de Datos
 
 ```bash
-# Crear y aplicar migraciones (base de datos principal)
-pnpm prisma:migrate:dev
+# Crear y aplicar migraciones
+pnpm prisma:test_micro:migrate   # Base de datos principal
+pnpm prisma:netflix:migrate  # Base de datos Netflix
 
 # Regenerar cliente Prisma
-pnpm prisma:generate
+pnpm prisma:generate:all     # Generar todos los clientes
 
 # Actualizar schema desde base de datos
-pnpm prisma:db:pull
+pnpm prisma:test_micro:pull
+pnpm prisma:netflix:pull
 
-# Base de datos Netflix
-npx prisma db push --schema=libs/prisma-netflix/prisma/schema.prisma
+# Base de datos Netflix (Push directo sin migraciones)
+pnpm prisma:netflix:push
+
+# Seed de datos
 npx ts-node --project libs/prisma-netflix/tsconfig.seed.json libs/prisma-netflix/seed.ts
 ```
 
@@ -640,10 +658,12 @@ nx test <nombre-del-proyecto>
 Los tests E2E validan el flujo completo desde el API Gateway hasta los microservicios. Cada servicio tiene su propio proyecto de tests E2E en `apps/*-e2e/`.
 
 **Requisitos previos**:
+
 1. Todos los servicios deben estar corriendo (`pnpm start:all`)
 2. Las bases de datos deben estar configuradas y migradas
 
 **Ejecutar tests**:
+
 ```bash
 pnpm test:api-gateway:e2e
 ```
@@ -669,50 +689,50 @@ graph TB
         N[netflix]
         C[csv-processor]
     end
-    
+
     subgraph "OpenTelemetry SDK"
         SDK1[OTel SDK<br/>Traces]
         SDK2[OTel SDK<br/>Metrics]
         SDK3[OTel SDK<br/>Logs]
     end
-    
+
     subgraph "OpenTelemetry Collector"
         RC[OTLP Receiver<br/>:4318]
         PE[Processor]
         EX[Exporter]
     end
-    
+
     subgraph "SigNoz"
         S[SigNoz UI<br/>:8080]
         CH[ClickHouse<br/>Storage]
     end
-    
+
     G -->|Traces| SDK1
     A -->|Traces| SDK1
     N -->|Traces| SDK1
     C -->|Traces| SDK1
-    
+
     G -->|Metrics| SDK2
     A -->|Metrics| SDK2
     N -->|Metrics| SDK2
     C -->|Metrics| SDK2
-    
+
     G -->|Logs| SDK3
     A -->|Logs| SDK3
     N -->|Logs| SDK3
     C -->|Logs| SDK3
-    
+
     SDK1 -->|OTLP HTTP| RC
     SDK2 -->|OTLP HTTP| RC
     SDK3 -->|OTLP HTTP| RC
-    
+
     RC --> PE
     PE --> EX
     EX -->|Export| S
     EX -->|Store| CH
-    
+
     S -->|Query| CH
-    
+
     style SDK1 fill:#9b59b6,stroke:#7d3c98,color:#fff
     style SDK2 fill:#9b59b6,stroke:#7d3c98,color:#fff
     style SDK3 fill:#9b59b6,stroke:#7d3c98,color:#fff
@@ -729,11 +749,13 @@ graph TB
 ### Configuración
 
 1. **Iniciar SigNoz y Collector**:
+
 ```bash
 docker-compose up -d
 ```
 
 2. **Acceder a SigNoz**:
+
 - URL: http://localhost:8080
 - Usuario por defecto: `admin`
 - Contraseña por defecto: `admin`
@@ -748,12 +770,12 @@ Para más detalles, ver [libs/observability/README.md](libs/observability/README
 
 Todas las APIs están disponibles a través del API Gateway con el prefijo `/api`:
 
-| Categoría de Endpoint | Base Path | Servicio | Documentación |
-|----------------------|-----------|----------|---------------|
-| Estado de Servicios | `/api/services` | Gateway | Ver [apps/api-gateway/README.md](apps/api-gateway/README.md) |
-| Autenticación | `/api/auth` | api-auth | Ver [apps/api-auth/README.md](apps/api-auth/README.md) |
-| Netflix Shows | `/api/netflix` | netflix | Ver [apps/netflix/README.md](apps/netflix/README.md) |
-| Procesamiento CSV | `/api/csv` | csv-processor | Ver [apps/csv-processor/README.md](apps/csv-processor/README.md) |
+| Categoría de Endpoint | Base Path       | Servicio      | Documentación                                                    |
+| --------------------- | --------------- | ------------- | ---------------------------------------------------------------- |
+| Estado de Servicios   | `/api/services` | Gateway       | Ver [apps/api-gateway/README.md](apps/api-gateway/README.md)     |
+| Autenticación         | `/api/auth`     | api-auth      | Ver [apps/api-auth/README.md](apps/api-auth/README.md)           |
+| Netflix Shows         | `/api/netflix`  | netflix       | Ver [apps/netflix/README.md](apps/netflix/README.md)             |
+| Procesamiento CSV     | `/api/csv`      | csv-processor | Ver [apps/csv-processor/README.md](apps/csv-processor/README.md) |
 
 **Swagger UI**: Documentación interactiva disponible en http://localhost:3000/api/docs cuando el API Gateway está corriendo.
 
