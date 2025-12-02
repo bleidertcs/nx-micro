@@ -11,6 +11,8 @@ El servicio **api-auth** es responsable de todas las operaciones de autenticaci�
 - [Estructura del Código](#estructura-del-código)
 - [Configuración](#configuración)
 - [Seguridad](#seguridad)
+- [JSON Web Tokens (JWT)](#json-web-tokens-jwt)
+  - [Implementación Detallada de JWT en `JwtService`](#implementación-detallada-de-jwt-en-jwtservice)
 - [Base de Datos](#base-de-datos)
 
 ## 🎯 Descripción
@@ -458,6 +460,216 @@ Todos los DTOs se validan usando `class-validator`:
 Los errores se manejan de forma segura:
 - No se revela si un email existe o no (evita enumeración)
 - Mensajes de error genéricos para credenciales inválidas
+
+## 🔑 JSON Web Tokens (JWT)
+
+Un JSON Web Token (JWT) es un estándar abierto (RFC 7519) que define una forma compacta y autónoma de transmitir información de manera segura entre partes como un objeto JSON. Esta información puede ser verificada y confiable porque está firmada digitalmente. Los JWT pueden ser firmados utilizando un secreto (con el algoritmo HMAC) o un par de claves pública/privada (usando RSA o ECDSA).
+
+### Estructura de un JWT
+
+Un JWT consta de tres partes principales, separadas por puntos: **Encabezado**, **Carga útil** y **Firma**.
+
+1.  **Encabezado (Header):**
+    Contiene metadatos sobre el token, incluyendo el tipo de token (JWT) y el algoritmo de firma utilizado (`alg`).
+
+    ```json
+    {
+      "alg": "HS256",
+      "typ": "JWT"
+    }
+    ```
+
+    Aquí, `"alg"` indica el algoritmo de firma (en este caso, HMAC SHA-256) y `"typ"` especifica que es un JWT.
+
+2.  **Carga útil (Payload):**
+    Contiene las afirmaciones (claims), que son declaraciones sobre una entidad (generalmente, el usuario) y datos adicionales. Existen tres tipos de claims:
+    *   **Claims Registrados:** Un conjunto de claims predefinidos, no obligatorios pero recomendados. Ejemplos comunes son:
+        *   `iss` (Issuer): Emisor del token.
+        *   `sub` (Subject): Sujeto del token (por ejemplo, el ID del usuario).
+        *   `aud` (Audience): Destinatario del token.
+        *   `exp` (Expiration Time): Tiempo de expiración del token.
+        *   `iat` (Issued At): Marca de tiempo de emisión del token.
+    *   **Claims Públicos:** Pueden ser definidos por los usuarios y deben ser únicos para evitar colisiones.
+    *   **Claims Privados:** Son personalizados y acordados entre las partes que intercambian la información.
+
+    Ejemplo de carga útil:
+
+    ```json
+    {
+      "sub": "1234567890",
+      "name": "John Doe",
+      "admin": true,
+      "iat": 1516239022
+    }
+    ```
+
+3.  **Firma (Signature):**
+    Para crear la firma, se toma el encabezado y la carga útil, se codifican en Base64Url, se concatenan con un punto, y se firma con un secreto (para HMAC) o una clave privada (para RSA/ECDSA) utilizando el algoritmo especificado en el encabezado. Esto asegura que el token no haya sido alterado.
+
+    La firma se calcula de la siguiente manera:
+
+    ```
+    HMACSHA256(
+      base64UrlEncode(header) + "." +
+      base64UrlEncode(payload),
+      secret
+    )
+    ```
+
+    El JWT final se ve así: `xxxxx.yyyyy.zzzzz`
+
+### Funcionamiento de un JWT
+
+1.  **Autenticación:** Cuando un usuario inicia sesión con sus credenciales (usuario y contraseña), el servidor verifica la autenticidad de las mismas.
+2.  **Generación del JWT:** Si las credenciales son válidas, el servidor genera un JWT. Este token incluye información relevante sobre el usuario (claims) y establece un tiempo de expiración.
+3.  **Envío del JWT al cliente:** El servidor envía el JWT al cliente. El cliente lo almacena (por ejemplo, en la memoria del navegador, `localStorage`, o en una cookie segura).
+4.  **Uso del JWT:** En cada solicitud subsiguiente al servidor, el cliente envía el JWT, generalmente en el encabezado de autorización:
+
+    ```
+    Authorization: Bearer <token>
+    ```
+
+5.  **Verificación y Validación del JWT:** El servidor recibe el JWT en cada solicitud protegida. Antes de confiar en su contenido, realiza varios pasos cruciales:
+    *   **Verificación de Firma:** Utiliza el secreto compartido (para HMAC) o la clave pública (para RSA/ECDSA) para recalcular la firma del token y la compara con la firma original presente en el JWT. Si las firmas no coinciden, el token ha sido alterado o es inválido, y se rechaza. Esto garantiza la **integridad** del token.
+    *   **Validación de Claims:** Además de la firma, se validan los claims registrados. Los más importantes son:
+        *   `exp` (Expiration Time): Se verifica que el token no haya expirado. Si la fecha actual es posterior a `exp`, el token se considera caducado y se rechaza.
+        *   `nbf` (Not Before): Opcionalmente, se verifica que el token no sea utilizado antes de un tiempo específico.
+        *   `iss` (Issuer) y `aud` (Audience): Se puede verificar que el emisor del token sea el esperado y que el token esté destinado a la audiencia correcta, lo que añade otra capa de seguridad.
+    Si todas las verificaciones y validaciones son exitosas, el servidor confía en la información del payload y procesa la solicitud.
+
+### Ventajas de Usar JWT
+
+*   **Compacto:** Debido a su formato JSON y codificación en Base64Url, los JWT son compactos y pueden ser fácilmente transmitidos en URLs, encabezados HTTP y cookies.
+*   **Autónomo:** Contienen toda la información necesaria sobre el usuario, lo que puede eliminar la necesidad de consultar una base de datos en cada solicitud para obtener detalles básicos del usuario.
+*   **Seguro:** Al estar firmados digitalmente, la integridad de los datos está garantizada, lo que significa que el servidor puede confiar en que el contenido del token no ha sido alterado desde su emisión. Pueden ser cifrados para mayor seguridad, aunque la firma ya proporciona integridad.
+
+### Consideraciones de Seguridad
+
+*   **Almacenamiento Seguro:** Es fundamental almacenar los JWT de manera segura en el cliente (por ejemplo, en `HttpOnly` cookies para proteger contra ataques XSS).
+*   **Expiración y Renovación:**
+    *   **Tokens de Acceso (Access Tokens):** Deben tener una **corta duración** (minutos u horas). Esto minimiza el riesgo si un access token es interceptado, ya que su ventana de utilidad es limitada. Una vez que expira, el cliente debe obtener uno nuevo.
+    *   **Tokens de Refresco (Refresh Tokens):** Tienen una **vida útil más larga** (días o semanas) y se utilizan para obtener nuevos access tokens sin requerir que el usuario vuelva a iniciar sesión con sus credenciales. Los refresh tokens deben ser almacenados de forma segura en el servidor y pueden ser **revocados** si se sospecha un compromiso. La implementación de un mecanismo de rotación de refresh tokens (donde cada vez que se usa uno, se emite uno nuevo y el anterior se invalida) añade una capa extra de seguridad.
+    Establecer tiempos de expiración adecuados y mecanismos para renovar tokens ayuda a mitigar riesgos en caso de que un token sea comprometido.
+*   **Uso de HTTPS:** Siempre utilizar HTTPS para transmitir JWTs y protegerlos contra ataques de intermediarios (Man-in-the-Middle).
+*   **Secreto Fuerte:** Utilizar un secreto de firma fuerte y complejo que no sea fácil de adivinar o `bruteforcear`.
+
+### Implementación Detallada de JWT en `JwtService`
+
+El servicio `JwtService` (ubicado en `apps/api-auth/src/infrastructure/security/jwt.service.ts`) es el encargado de la generación y verificación de los JSON Web Tokens en la aplicación. Utiliza la librería `@nestjs/jwt` para abstraer la complejidad de la gestión de JWT.
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { JwtService as NestJwtService } from '@nestjs/jwt';
+import { envs } from '../../config/envs';
+
+export interface JwtPayload {
+  sub: string;
+  email: string;
+}
+
+@Injectable()
+export class JwtService {
+  constructor(private readonly jwtService: NestJwtService) {}
+
+  generateAccessToken(payload: JwtPayload): string {
+    return this.jwtService.sign(payload, {
+      secret: envs.jwtSecret,
+      expiresIn: envs.jwtAccessExpiration as any,
+    });
+  }
+
+  generateRefreshToken(payload: JwtPayload): string {
+    return this.jwtService.sign(payload, {
+      secret: envs.jwtSecret,
+      expiresIn: envs.jwtRefreshExpiration as any,
+    });
+  }
+
+  verifyAccessToken(token: string): JwtPayload {
+    return this.jwtService.verify(token, {
+      secret: envs.jwtSecret,
+    });
+  }
+
+  verifyRefreshToken(token: string): JwtPayload {
+    return this.jwtService.verify(token, {
+      secret: envs.jwtSecret,
+    });
+  }
+}
+```
+
+#### Componentes Clave:
+
+*   **`JwtPayload` Interfaz:**
+    Define la estructura mínima del `payload` que se incluirá en nuestros tokens. Contiene `sub` (subject, que típicamente es el ID del usuario) y `email`.
+
+    ```typescript
+    export interface JwtPayload {
+      sub: string;
+      email: string;
+    }
+    ```
+
+*   **Constructor:**
+    El servicio inyecta `NestJwtService` de `@nestjs/jwt`, que es la implementación base que proporciona NestJS para trabajar con JWT.
+
+    ```typescript
+    constructor(private readonly jwtService: NestJwtService) {}
+    ```
+
+*   **`generateAccessToken(payload: JwtPayload): string`:**
+    Este método es responsable de crear un **Access Token**. Recibe un `payload` (`JwtPayload`) y lo firma utilizando:
+    *   `secret: envs.jwtSecret`: La clave secreta para firmar el token, obtenida de las variables de entorno para mayor seguridad.
+    *   `expiresIn: envs.jwtAccessExpiration`: El tiempo de expiración del access token, también configurado en las variables de entorno. Los access tokens suelen tener una duración corta (e.g., 15 minutos).
+
+    ```typescript
+    generateAccessToken(payload: JwtPayload): string {
+      return this.jwtService.sign(payload, {
+        secret: envs.jwtSecret,
+        expiresIn: envs.jwtAccessExpiration as any,
+      });
+    }
+    ```
+
+*   **`generateRefreshToken(payload: JwtPayload): string`:**
+    Similar al `generateAccessToken`, pero este método crea un **Refresh Token**. La diferencia principal es que `expiresIn` se configura con `envs.jwtRefreshExpiration`, que suele ser un período de tiempo más largo (e.g., 7 días) para permitir a los usuarios obtener nuevos access tokens sin tener que volver a iniciar sesión con sus credenciales.
+
+    ```typescript
+    generateRefreshToken(payload: JwtPayload): string {
+      return this.jwtService.sign(payload, {
+        secret: envs.jwtSecret,
+        expiresIn: envs.jwtRefreshExpiration as any,
+      });
+    }
+    ```
+
+*   **`verifyAccessToken(token: string): JwtPayload`:**
+    Este método se encarga de **verificar y validar** un access token. Recibe el token como una cadena y realiza las siguientes comprobaciones:
+    *   **Verificación de Firma:** Utiliza el `envs.jwtSecret` para verificar que la firma del token sea auténtica y que el token no haya sido manipulado.
+    *   **Validación de Expiración:** Comprueba automáticamente el claim `exp` (expiration time) del token. Si el token ha expirado, este método lanzará una excepción.
+    Si el token es válido y no ha expirado, devuelve el `payload` original (`JwtPayload`) contenido en el token.
+
+    ```typescript
+    verifyAccessToken(token: string): JwtPayload {
+      return this.jwtService.verify(token, {
+        secret: envs.jwtSecret,
+      });
+    }
+    ```
+
+*   **`verifyRefreshToken(token: string): JwtPayload`:**
+    Funciona de manera idéntica a `verifyAccessToken`, pero está diseñado para validar refresh tokens. También verifica la firma y la expiración del token utilizando el mismo secreto, pero considerando la duración más larga del refresh token.
+
+    ```typescript
+    verifyRefreshToken(token: string): JwtPayload {
+      return this.jwtService.verify(token, {
+        secret: envs.jwtSecret,
+      });
+    }
+    ```
+
+Esta implementación proporciona las funcionalidades esenciales para un sistema de autenticación basado en JWT, gestionando la emisión y la validación de tokens de acceso y de refresco con tiempos de vida configurables.
 
 ## 💾 Base de Datos
 
