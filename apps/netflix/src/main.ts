@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app/app.module';
-import { RpcCustomExceptionFilter } from './common/exceptions/rpc-custom-exception.filter';
-import { envs } from './app/config';
+import { RpcCustomExceptionFilter } from '@nx-microservices/shared-lib';
+import { envs } from './config';
 import { initObservability } from '@nx-microservices/observability';
 
 async function bootstrap() {
@@ -19,6 +19,14 @@ async function bootstrap() {
                 port: envs.portNetflix,
             },
         }
+    );
+
+
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            forbidNonWhitelisted: true,
+        })
     );
 
     app.useGlobalFilters(new RpcCustomExceptionFilter());

@@ -21,6 +21,9 @@ Arquitectura de microservicios de producción construida con Nx monorepo, NestJS
 - [Testing](#-testing)
 - [Observabilidad](#-observabilidad)
 - [Documentación de APIs](#-documentación-de-apis)
+- [Mejores Prácticas y Estándares de Código](#-mejores-prácticas-y-estándares-de-código)
+- [Glosario de Conceptos Técnicos](#-glosario-de-conceptos-técnicos)
+- [Seguridad](#-seguridad)
 
 ## 🎯 Descripción General
 
@@ -125,7 +128,8 @@ nx-microservices/
 │   ├── observability/        # Librería de observabilidad OpenTelemetry
 │   ├── test_micro/           # Cliente Prisma para base de datos principal
 │   ├── prisma-netflix/       # Cliente Prisma para base de datos Netflix
-│   └── shared-lib/           # Utilidades y helpers compartidos
+│   ├── shared-lib/           # Utilidades, helpers y middleware compartidos
+│   └── shared-dtos/          # DTOs de autenticación compartidos
 ├── docs/                     # Documentación adicional
 ├── signoz-config/            # Configuración de SigNoz
 ├── docker-compose.yaml       # Configuración de Docker para SigNoz
@@ -188,16 +192,21 @@ Pipeline de procesamiento asíncrono de archivos CSV:
 
 ## 📚 Librerías Compartidas
 
-El monorepo incluye cuatro librerías compartidas que promueven la reutilización de código:
+El monorepo incluye cinco librerías compartidas que promueven la reutilización de código:
 
 | Librería              | Nombre del Paquete                 | Propósito                                                        | Usado Por               |
 | --------------------- | ---------------------------------- | ---------------------------------------------------------------- | ----------------------- |
 | `libs/observability`  | `@nx-microservices/observability`  | Función de inicialización de OpenTelemetry `initObservability()` | Todos los servicios     |
 | `libs/test_micro`     | `@nx-microservices/test_micro`     | Cliente Prisma para base de datos `test_micro`                   | api-auth, csv-processor |
 | `libs/prisma-netflix` | `@nx-microservices/prisma-netflix` | Cliente Prisma para base de datos `netflix_shows`                | netflix                 |
-| `libs/shared-lib`     | `@nx-microservices/shared-lib`     | Utilidades y helpers comunes                                     | api-gateway             |
+| `libs/shared-lib`     | `@nx-microservices/shared-lib`     | Utilidades, helpers y middleware comunes                         | Todos los servicios     |
+| `libs/shared-dtos`    | `@nx-microservices/shared-dtos`    | DTOs de autenticación compartidos                                | api-gateway, api-auth   |
 
 La librería `observability` es particularmente crítica ya que centraliza la configuración de OpenTelemetry. Cada servicio importa y llama a `initObservability()` durante el bootstrap para habilitar trazado distribuido, recolección de métricas y correlación de logs.
+
+La librería `shared-dtos` centraliza los DTOs de autenticación, eliminando duplicación entre servicios y asegurando consistencia en validaciones.
+
+La librería `shared-lib` proporciona utilidades reutilizables como `configureMicroservice()` para configuración estándar de microservicios y `configureGatewayMiddleware()` para middleware de API Gateway.
 
 📖 **Documentación detallada de cada librería**:
 
@@ -205,6 +214,7 @@ La librería `observability` es particularmente crítica ya que centraliza la co
 - [libs/test_micro/README.md](libs/test_micro/README.md)
 - [libs/prisma-netflix/README.md](libs/prisma-netflix/README.md)
 - [libs/shared-lib/README.md](libs/shared-lib/README.md)
+- [libs/shared-dtos/README.md](libs/shared-dtos/README.md)
 
 ## 🚀 Inicio Rápido
 
@@ -397,155 +407,9 @@ Para más detalles, ver la documentación de cada servicio.
 
 ## ➕ Crear una Nueva API
 
-Para crear un nuevo microservicio en este monorepo:
+Para una guía detallada paso a paso sobre cómo crear, configurar e integrar nuevos microservicios, consulta:
 
-### 1. Generar la aplicación NestJS
-
-```bash
-npx nx generate @nx/nest:application mi-nuevo-servicio
-```
-
-### 2. Configurar como Microservicio TCP
-
-Edita `apps/mi-nuevo-servicio/src/main.ts`:
-
-```typescript
-import { NestFactory } from '@nestjs/core';
-import { Transport, MicroserviceOptions } from '@nestjs/microservices';
-import { AppModule } from './app/app.module';
-import { RpcCustomExceptionFilter } from '@nx-microservices/shared-lib';
-import { initObservability } from '@nx-microservices/observability';
-
-async function bootstrap() {
-  // Inicializar observabilidad
-  initObservability('mi-nuevo-servicio');
-
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-    transport: Transport.TCP,
-    options: {
-      host: '127.0.0.1',
-      port: 3004, // Puerto único para tu servicio
-    },
-  });
-
-  app.useGlobalFilters(new RpcCustomExceptionFilter());
-  await app.listen();
-
-  Logger.log(`🚀 Mi Nuevo Servicio running on TCP port: 3004`);
-}
-
-bootstrap();
-```
-
-### 3. Agregar al API Gateway
-
-1. **Agregar constante de servicio** (`apps/api-gateway/src/config/constants.ts`):
-
-```typescript
-export const SERVICES = {
-  // ... servicios existentes
-  MI_NUEVO_SERVICIO: 'mi-nuevo-servicio',
-} as const;
-
-export const TCP_CONFIG = {
-  // ... configuración existente
-  PORTS: {
-    // ... puertos existentes
-    MI_NUEVO_SERVICIO: parseInt(process.env.PORT_MI_NUEVO_SERVICIO || '3004'),
-  },
-} as const;
-```
-
-2. **Registrar cliente TCP** (`apps/api-gateway/src/config/microservices.config.ts`):
-
-```typescript
-export const microservicesConfig = ClientsModule.register([
-  // ... clientes existentes
-  {
-    name: SERVICES.MI_NUEVO_SERVICIO,
-    transport: Transport.TCP,
-    options: {
-      host: TCP_CONFIG.HOST,
-      port: TCP_CONFIG.PORTS.MI_NUEVO_SERVICIO,
-    },
-  },
-]);
-```
-
-3. **Inyectar en GatewayService** (`apps/api-gateway/src/app/services/gateway.service.ts`):
-
-```typescript
-constructor(
-  // ... clientes existentes
-  @Inject(SERVICES.MI_NUEVO_SERVICIO) private readonly miNuevoServicioClient: ClientProxy,
-) {}
-```
-
-4. **Agregar al método getClient**:
-
-```typescript
-private getClient(serviceName: string): ClientProxy {
-  switch (serviceName) {
-    // ... casos existentes
-    case SERVICES.MI_NUEVO_SERVICIO:
-      return this.miNuevoServicioClient;
-    default:
-      throw new Error(`Service ${serviceName} not found`);
-  }
-}
-```
-
-5. **Crear controlador en Gateway** (`apps/api-gateway/src/app/controllers/mi-nuevo-servicio.controller.ts`):
-
-```typescript
-@ApiTags('Mi Nuevo Servicio')
-@Controller('mi-nuevo-servicio')
-export class MiNuevoServicioController {
-  constructor(@Inject(SERVICES.MI_NUEVO_SERVICIO) private readonly client: ClientProxy) {}
-
-  @Get()
-  @ApiOperation({ summary: 'Ejemplo de endpoint' })
-  async ejemplo() {
-    return firstValueFrom(this.client.send({ cmd: 'mi-nuevo-servicio.ejemplo' }, {}));
-  }
-}
-```
-
-6. **Registrar en AppModule** (`apps/api-gateway/src/app/app.module.ts`):
-
-```typescript
-import { MiNuevoServicioController } from './controllers/mi-nuevo-servicio.controller';
-
-@Module({
-  // ... imports existentes
-  controllers: [
-    // ... controladores existentes
-    MiNuevoServicioController,
-  ],
-})
-export class AppModule {}
-```
-
-### 4. Agregar Variables de Entorno
-
-Agrega al archivo `.env`:
-
-```env
-PORT_MI_NUEVO_SERVICIO=3004
-```
-
-### 5. Agregar Scripts
-
-Agrega al `package.json`:
-
-```json
-{
-  "scripts": {
-    "start:mi-nuevo-servicio": "nx serve mi-nuevo-servicio",
-    "build:mi-nuevo-servicio": "nx build mi-nuevo-servicio"
-  }
-}
-```
+📖 [Guía para Crear Nuevos Servicios](docs/CREATING_SERVICES.md)
 
 ## 📦 Crear una Nueva Librería
 
@@ -779,7 +643,19 @@ Todas las APIs están disponibles a través del API Gateway con el prefijo `/api
 
 **Swagger UI**: Documentación interactiva disponible en http://localhost:3000/api/docs cuando el API Gateway está corriendo.
 
-## 🔒 Seguridad
+## 📐 Mejores Prácticas y Estándares de Código
+
+Para mantener la calidad y consistencia del código, consulta nuestra guía completa de estándares:
+
+📖 [Mejores Prácticas y Estándares](docs/BEST_PRACTICES.md)
+
+## 📖 Glosario de Conceptos Técnicos
+
+Para explicaciones detalladas de los términos técnicos y conceptos utilizados en el proyecto:
+
+📖 [Glosario de Conceptos Técnicos](docs/GLOSSARY.md)
+
+## �🔒 Seguridad
 
 El sistema implementa seguridad en profundidad:
 

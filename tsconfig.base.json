@@ -18,7 +18,8 @@
       "@nx-microservices/shared-lib": ["libs/shared-lib/src/index.ts"],
       "@nx-microservices/observability": ["libs/observability/src/index.ts"],
       "@nx-microservices/test_micro": ["libs/test_micro/src/index.ts"],
-      "@nx-microservices/prisma-netflix": ["libs/prisma-netflix/src/index.ts"]
+      "@nx-microservices/prisma-netflix": ["libs/prisma-netflix/src/index.ts"],
+      "@nx-microservices/shared-dtos": ["libs/shared-dtos/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

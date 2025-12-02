@@ -10,10 +10,12 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
-import { RegisterUserDto } from '../dtos/register-user.dto';
-import { LoginUserDto } from '../dtos/login-user.dto';
-import { RefreshTokenDto } from '../dtos/refresh-token.dto';
-import { ValidateTokenDto } from '../dtos/validate-token.dto';
+import {
+    RegisterUserDto,
+    LoginUserDto,
+    RefreshTokenDto,
+    ValidateTokenDto,
+} from '@nx-microservices/shared-dtos';
 import { SERVICES } from '../../config/constants';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
