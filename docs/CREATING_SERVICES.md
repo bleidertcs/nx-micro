@@ -16,7 +16,7 @@ Esta guía detalla el proceso paso a paso para crear un nuevo microservicio en e
 Usa el generador de Nx para crear una nueva aplicación NestJS:
 
 ```bash
-npx nx generate @nx/nest:application mi-nuevo-servicio
+npx nx generate @nx/nest:application mi-nuevo-servicio --directory=apps/mi-nuevo-servicio
 ```
 
 Esto creará:
@@ -259,7 +259,7 @@ Si tu servicio necesita su propia base de datos con Prisma:
 ### 6.1 Generar Librería
 
 ```bash
-npx nx generate @nx/nest:library mi-servicio-db
+npx nx generate @nx/nest:library mi-servicio-db --directory=libs/mi-servicio-db
 ```
 
 ### 6.2 Configurar Prisma

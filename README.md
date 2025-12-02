@@ -222,11 +222,12 @@ La librería `shared-lib` proporciona utilidades reutilizables como `configureMi
 
 Asegúrate de tener instalado lo siguiente:
 
-- [Node.js](https://nodejs.org/) (v20 o superior recomendado)
-- [pnpm](https://pnpm.io/installation)
 - [Docker](https://www.docker.com/get-started/) y Docker Compose
+- [Node.js](https://nodejs.org/) (v20+) y [pnpm](https://pnpm.io/installation) (opcional, para desarrollo local)
 
-### Instalación
+### Ejecutar con Docker (Recomendado)
+
+La forma más rápida de iniciar toda la aplicación es usando Docker Compose:
 
 1. **Clonar el repositorio**:
 
@@ -417,12 +418,17 @@ Para crear una nueva librería compartida:
 
 ### 1. Generar la librería
 
-```bash
-# Librería NestJS (si necesita módulos NestJS)
-npx nx generate @nx/nest:library mi-nueva-lib
+Elige el tipo de librería según tus necesidades:
 
-# Librería TypeScript genérica
-npx nx generate @nx/js:library mi-nueva-lib
+- **Librería NestJS**: Úsala si necesitas inyección de dependencias, módulos, servicios, guards o decoradores de NestJS.
+- **Librería Genérica**: Úsala para DTOs, interfaces, tipos, constantes o funciones puras que no dependen del framework (ideal para compartir con frontend o paquetes agnósticos).
+
+```bash
+# Opción A: Librería NestJS (con módulos y DI)
+npx nx generate @nx/nest:library mi-nueva-lib --directory=libs/mi-nueva-lib
+
+# Opción B: Librería TypeScript genérica (solo TS puro)
+npx nx generate @nx/js:library mi-nueva-lib --directory=libs/mi-nueva-lib
 ```
 
 ### 2. Configurar Path Mapping
