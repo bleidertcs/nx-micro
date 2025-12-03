@@ -4,8 +4,8 @@ import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { LOGGER_TOKEN } from '@nx-microservices/observability';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
-import * as fs from 'fs';
+import { extname } from 'node:path';
+import * as fs from 'node:fs';
 
 @ApiTags('CSV')
 @Controller('csv')

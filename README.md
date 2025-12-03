@@ -523,6 +523,24 @@ nx test <nombre-del-proyecto>
 
 ## 🧪 Testing
 
+El proyecto cuenta con una cobertura completa de tests en tres niveles: **Unit Tests**, **TCP E2E Tests**, y **HTTP E2E Tests**.
+
+### Documentación de Testing
+
+Para información detallada sobre testing:
+
+📖 **[Guía de Creación de Tests](docs/TESTING_GUIDE.md)** - Cómo crear tests unitarios, TCP E2E, y HTTP E2E
+
+📖 **[Guía de Ejecución de Tests](docs/TESTING_EXECUTION.md)** - Cómo ejecutar tests paso a paso, solución de problemas
+
+### Cobertura de Tests
+
+El API de Netflix cuenta con **64 tests** en total:
+
+- **39 Unit Tests**: Use cases, controllers, repositories
+- **12 TCP E2E Tests**: Comunicación directa con microservicio
+- **13 HTTP E2E Tests**: Flujo completo a través del API Gateway
+
 ### Tests End-to-End
 
 Los tests E2E validan el flujo completo desde el API Gateway hasta los microservicios. Cada servicio tiene su propio proyecto de tests E2E en `apps/*-e2e/`.

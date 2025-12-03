@@ -1,5 +1,5 @@
-import { Controller, Post, Inject, Param, Body, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { Controller, Inject } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { GatewayService } from '../services/gateway.service';
 import { LOGGER_TOKEN } from '@nx-microservices/observability';
 import { Logger } from 'winston';

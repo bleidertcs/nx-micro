@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Inject, Param, Body, Headers } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { AppService } from './app.service';
 import { GatewayService } from './services/gateway.service';
 import { LOGGER_TOKEN } from '@nx-microservices/observability';
