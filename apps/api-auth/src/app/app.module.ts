@@ -13,15 +13,21 @@ import { UserRepository } from '../domain/repositories/user.repository.interface
 import { PrismaUserRepository } from '../infrastructure/database/prisma-user.repository';
 
 // Use cases
-import { RegisterUserUseCase } from '../application/use-cases/register-user.use-case';
-import { LoginUserUseCase } from '../application/use-cases/login-user.use-case';
-import { ValidateTokenUseCase } from '../application/use-cases/validate-token.use-case';
-import { RefreshTokenUseCase } from '../application/use-cases/refresh-token.use-case';
-import { GetUserProfileUseCase } from '../application/use-cases/get-user-profile.use-case';
+import { RegisterUserUseCase } from './use-cases/register-user.use-case';
+import { LoginUserUseCase } from './use-cases/login-user.use-case';
+import { ValidateTokenUseCase } from './use-cases/validate-token.use-case';
+import { RefreshTokenUseCase } from './use-cases/refresh-token.use-case';
+import { GetUserProfileUseCase } from './use-cases/get-user-profile.use-case';
+import { RequestPasswordResetUseCase } from './use-cases/request-password-reset.use-case';
+import { VerifyResetTokenUseCase } from './use-cases/verify-reset-token.use-case';
+import { ResetPasswordUseCase } from './use-cases/reset-password.use-case';
+import { ChangePasswordUseCase } from './use-cases/change-password.use-case';
+import { UpdateUserProfileUseCase } from './use-cases/update-user-profile.use-case';
 
 // Infrastructure services
 import { BcryptService } from '../infrastructure/security/bcrypt.service';
 import { JwtService } from '../infrastructure/security/jwt.service';
+import { EmailService } from '../infrastructure/email/email.service';
 
 @Module({
   imports: [
@@ -44,6 +50,7 @@ import { JwtService } from '../infrastructure/security/jwt.service';
     // Infrastructure services
     BcryptService,
     JwtService,
+    EmailService,
     // Repository
     {
       provide: 'UserRepository',
@@ -55,6 +62,11 @@ import { JwtService } from '../infrastructure/security/jwt.service';
     ValidateTokenUseCase,
     RefreshTokenUseCase,
     GetUserProfileUseCase,
+    RequestPasswordResetUseCase,
+    VerifyResetTokenUseCase,
+    ResetPasswordUseCase,
+    ChangePasswordUseCase,
+    UpdateUserProfileUseCase,
   ],
 })
 export class AppModule { }

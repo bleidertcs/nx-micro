@@ -2,6 +2,7 @@ import {
     Controller,
     Post,
     Get,
+    Put,
     Body,
     Request,
     Inject,
@@ -16,6 +17,11 @@ import {
     RefreshTokenDto,
     ValidateTokenDto,
 } from '@nx-microservices/shared-dtos';
+import { RequestPasswordResetDto } from '../dtos/request-password-reset.dto';
+import { VerifyResetTokenDto } from '../dtos/verify-reset-token.dto';
+import { ResetPasswordDto } from '../dtos/reset-password.dto';
+import { ChangePasswordDto } from '../dtos/change-password.dto';
+import { UpdateProfileDto } from '../dtos/update-profile.dto';
 import { SERVICES } from '../../config/constants';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
@@ -75,6 +81,60 @@ export class AuthController {
         const userId = req.user?.id;
         return firstValueFrom(
             this.authService.send({ cmd: 'auth.profile' }, { userId })
+        );
+    }
+
+    @Put('profile')
+    @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Update user profile' })
+    @ApiBearerAuth('access-token')
+    @ApiResponse({ status: 200, description: 'Profile updated successfully' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    async updateProfile(@Request() req: any, @Body() dto: UpdateProfileDto) {
+        const userId = req.user?.id;
+        return firstValueFrom(
+            this.authService.send({ cmd: 'auth.update-profile' }, { userId, ...dto })
+        );
+    }
+
+    @Post('change-password')
+    @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Change password for authenticated user' })
+    @ApiBearerAuth('access-token')
+    @ApiResponse({ status: 200, description: 'Password changed successfully' })
+    @ApiResponse({ status: 401, description: 'Invalid current password or unauthorized' })
+    async changePassword(@Request() req: any, @Body() dto: ChangePasswordDto) {
+        const userId = req.user?.id;
+        return firstValueFrom(
+            this.authService.send({ cmd: 'auth.change-password' }, { userId, ...dto })
+        );
+    }
+
+    @Post('request-password-reset')
+    @ApiOperation({ summary: 'Request password reset email' })
+    @ApiResponse({ status: 200, description: 'Password reset email sent if email exists' })
+    async requestPasswordReset(@Body() dto: RequestPasswordResetDto) {
+        return firstValueFrom(
+            this.authService.send({ cmd: 'auth.request-password-reset' }, dto)
+        );
+    }
+
+    @Post('verify-reset-token')
+    @ApiOperation({ summary: 'Verify password reset token validity' })
+    @ApiResponse({ status: 200, description: 'Token verification result' })
+    async verifyResetToken(@Body() dto: VerifyResetTokenDto) {
+        return firstValueFrom(
+            this.authService.send({ cmd: 'auth.verify-reset-token' }, dto)
+        );
+    }
+
+    @Post('reset-password')
+    @ApiOperation({ summary: 'Reset password with token' })
+    @ApiResponse({ status: 200, description: 'Password reset successfully' })
+    @ApiResponse({ status: 400, description: 'Invalid or expired token' })
+    async resetPassword(@Body() dto: ResetPasswordDto) {
+        return firstValueFrom(
+            this.authService.send({ cmd: 'auth.reset-password' }, dto)
         );
     }
 }

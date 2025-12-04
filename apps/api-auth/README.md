@@ -1,6 +1,6 @@
 # API Auth - Servicio de Autenticación
 
-El servicio **api-auth** es responsable de todas las operaciones de autenticación y gestión de usuarios en la arquitectura de microservicios. Implementa registro de usuarios, inicio de sesión, generación y validación de tokens JWT, y manejo de refresh tokens.
+El servicio **api-auth** es responsable de todas las operaciones de autenticación y gestión de usuarios en la arquitectura de microservicios. Implementa registro de usuarios, inicio de sesión, generación y validación de tokens JWT, manejo de refresh tokens, recuperación de contraseña, y gestión de perfiles de usuario.
 
 ## 📋 Tabla de Contenidos
 
@@ -44,13 +44,20 @@ apps/api-auth/src/
 │       ├── login-user.use-case.ts
 │       ├── validate-token.use-case.ts
 │       ├── refresh-token.use-case.ts
-│       └── get-user-profile.use-case.ts
+│       ├── get-user-profile.use-case.ts
+│       ├── request-password-reset.use-case.ts
+│       ├── verify-reset-token.use-case.ts
+│       ├── reset-password.use-case.ts
+│       ├── change-password.use-case.ts
+│       └── update-user-profile.use-case.ts
 ├── infrastructure/            # Capa de Infraestructura (implementaciones)
 │   ├── database/              # Implementación de repositorio con Prisma
 │   │   └── prisma-user.repository.ts
 │   ├── security/              # Servicios de seguridad
 │   │   ├── jwt.service.ts
 │   │   └── bcrypt.service.ts
+│   ├── email/                 # Servicio de email
+│   │   └── email.service.ts
 │   └── http/                  # DTOs para comunicación HTTP
 │       └── dtos/
 ├── app/                       # Capa de Presentación (NestJS)
@@ -72,7 +79,7 @@ graph TD
         Main[main.ts]
         Controller[app.controller.ts]
     end
-    
+
     subgraph "Application Layer"
         UC1[RegisterUseCase]
         UC2[LoginUseCase]
@@ -80,42 +87,42 @@ graph TD
         UC4[RefreshUseCase]
         UC5[ProfileUseCase]
     end
-    
+
     subgraph "Domain Layer"
         Entity[User Entity]
         RepoInterface[UserRepository Interface]
     end
-    
+
     subgraph "Infrastructure Layer"
         RepoImpl[PrismaUserRepository]
         JWT[JwtService]
         BC[BcryptService]
         Prisma[Prisma Client]
     end
-    
+
     Main --> Controller
     Controller --> UC1
     Controller --> UC2
     Controller --> UC3
     Controller --> UC4
     Controller --> UC5
-    
+
     UC1 --> RepoInterface
     UC2 --> RepoInterface
     UC3 --> RepoInterface
     UC4 --> RepoInterface
     UC5 --> RepoInterface
-    
+
     UC1 --> BC
     UC2 --> BC
     UC2 --> JWT
     UC3 --> JWT
     UC4 --> JWT
-    
+
     RepoInterface -.->|implementa| RepoImpl
     RepoImpl --> Prisma
     RepoImpl --> Entity
-    
+
     style Domain fill:#e8f5e9,stroke:#4caf50
     style Application fill:#e3f2fd,stroke:#2196f3
     style Infrastructure fill:#fff3e0,stroke:#ff9800
@@ -133,6 +140,7 @@ Permite crear nuevos usuarios en el sistema.
 **Comando TCP**: `auth.register`
 
 **Payload**:
+
 ```typescript
 {
   email: string;
@@ -151,7 +159,7 @@ sequenceDiagram
     participant BC as BcryptService
     participant UR as UserRepository
     participant DB as Database
-    
+
     G->>AC: TCP {cmd: 'auth.register', data}
     AC->>RU: execute({email, password, name})
     RU->>UR: findByEmail(email)
@@ -170,6 +178,7 @@ sequenceDiagram
 ```
 
 **Respuesta**:
+
 ```typescript
 {
   id: string;
@@ -187,6 +196,7 @@ Autentica usuarios y genera tokens JWT.
 **Comando TCP**: `auth.login`
 
 **Payload**:
+
 ```typescript
 {
   email: string;
@@ -205,7 +215,7 @@ sequenceDiagram
     participant BC as BcryptService
     participant JS as JwtService
     participant DB as Database
-    
+
     G->>AC: TCP {cmd: 'auth.login', {email, password}}
     AC->>LU: execute({email, password})
     LU->>UR: findByEmail(email)
@@ -232,6 +242,7 @@ sequenceDiagram
 ```
 
 **Respuesta**:
+
 ```typescript
 {
   accessToken: string;
@@ -242,7 +253,7 @@ sequenceDiagram
     name: string;
     createdAt: Date;
     updatedAt: Date;
-  };
+  }
 }
 ```
 
@@ -253,6 +264,7 @@ Verifica si un token JWT es válido.
 **Comando TCP**: `auth.validate`
 
 **Payload**:
+
 ```typescript
 {
   token: string;
@@ -260,12 +272,14 @@ Verifica si un token JWT es válido.
 ```
 
 **Proceso**:
+
 1. Verifica la firma del token usando el secreto JWT
 2. Verifica que el token no haya expirado
 3. Extrae el payload (user ID, email)
 4. Opcionalmente verifica que el usuario exista
 
 **Respuesta**:
+
 ```typescript
 {
   valid: boolean;
@@ -283,6 +297,7 @@ Renueva el access token usando un refresh token válido.
 **Comando TCP**: `auth.refresh`
 
 **Payload**:
+
 ```typescript
 {
   refreshToken: string;
@@ -290,6 +305,7 @@ Renueva el access token usando un refresh token válido.
 ```
 
 **Proceso**:
+
 1. Verifica que el refresh token sea válido
 2. Verifica que el refresh token exista en la base de datos
 3. Genera un nuevo access token
@@ -297,6 +313,7 @@ Renueva el access token usando un refresh token válido.
 5. Retorna los nuevos tokens
 
 **Respuesta**:
+
 ```typescript
 {
   accessToken: string;
@@ -311,6 +328,7 @@ Retorna los datos del perfil de un usuario autenticado.
 **Comando TCP**: `auth.profile`
 
 **Payload**:
+
 ```typescript
 {
   userId: string;
@@ -318,10 +336,12 @@ Retorna los datos del perfil de un usuario autenticado.
 ```
 
 **Proceso**:
+
 1. Busca el usuario por ID
 2. Retorna los datos del usuario (sin contraseña)
 
 **Respuesta**:
+
 ```typescript
 {
   id: string;
@@ -332,17 +352,180 @@ Retorna los datos del perfil de un usuario autenticado.
 }
 ```
 
+### 6. Solicitar Recuperación de Contraseña
+
+Genera un token de reset y envía un email de recuperación.
+
+**Comando TCP**: `auth.request-password-reset`
+
+**Payload**:
+
+```typescript
+{
+  email: string;
+}
+```
+
+**Proceso**:
+
+1. Busca el usuario por email
+2. Genera un token criptográficamente seguro (32 bytes)
+3. Almacena el token en base de datos con expiración de 1 hora
+4. Envía email con el token de recuperación (mock en desarrollo)
+5. Retorna mensaje genérico (no revela si el email existe)
+
+**Respuesta**:
+
+```typescript
+{
+  message: string; // "If the email exists, a password reset link has been sent."
+}
+```
+
+### 7. Verificar Token de Reset
+
+Valida si un token de recuperación es válido y no ha expirado.
+
+**Comando TCP**: `auth.verify-reset-token`
+
+**Payload**:
+
+```typescript
+{
+  token: string;
+}
+```
+
+**Proceso**:
+
+1. Busca el token en base de datos
+2. Verifica que no haya sido usado
+3. Verifica que no haya expirado
+
+**Respuesta**:
+
+```typescript
+{
+  valid: boolean;
+  userId?: string;  // Solo si el token es válido
+  message?: string; // Solo si el token es inválido
+}
+```
+
+### 8. Restablecer Contraseña
+
+Restablece la contraseña usando un token de reset válido.
+
+**Comando TCP**: `auth.reset-password`
+
+**Payload**:
+
+```typescript
+{
+  token: string;
+  newPassword: string;
+}
+```
+
+**Proceso**:
+
+1. Valida el token de reset (existencia, expiración, uso previo)
+2. Valida la nueva contraseña (mínimo 6 caracteres)
+3. Hashea la nueva contraseña con bcrypt
+4. Actualiza la contraseña del usuario
+5. Marca el token como usado
+
+**Respuesta**:
+
+```typescript
+{
+  message: string; // "Password has been reset successfully"
+}
+```
+
+### 9. Cambiar Contraseña (Usuario Autenticado)
+
+Permite a un usuario autenticado cambiar su contraseña.
+
+**Comando TCP**: `auth.change-password`
+
+**Payload**:
+
+```typescript
+{
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+}
+```
+
+**Proceso**:
+
+1. Busca el usuario por ID
+2. Verifica la contraseña actual
+3. Valida que la nueva contraseña sea diferente
+4. Hashea y actualiza la contraseña
+
+**Respuesta**:
+
+```typescript
+{
+  message: string; // "Password changed successfully"
+}
+```
+
+### 10. Actualizar Perfil de Usuario
+
+Actualiza la información del perfil del usuario.
+
+**Comando TCP**: `auth.update-profile`
+
+**Payload**:
+
+```typescript
+{
+  userId: string;
+  name: string;
+}
+```
+
+**Proceso**:
+
+1. Valida que el nombre no esté vacío
+2. Busca el usuario por ID
+3. Actualiza la información del perfil
+4. Retorna el usuario actualizado (sin contraseña)
+
+**Respuesta**:
+
+```typescript
+{
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }
+}
+```
+
 ## 🔌 Comandos TCP
 
 El servicio expone los siguientes comandos TCP que pueden ser invocados desde el API Gateway:
 
-| Comando | Descripción | Payload |
-|---------|-------------|---------|
-| `auth.register` | Registrar nuevo usuario | `{ email, password, name }` |
-| `auth.login` | Iniciar sesión | `{ email, password }` |
-| `auth.validate` | Validar token JWT | `{ token }` |
-| `auth.refresh` | Refrescar access token | `{ refreshToken }` |
-| `auth.profile` | Obtener perfil de usuario | `{ userId }` |
+| Comando                       | Descripción                          | Payload                                    |
+| ----------------------------- | ------------------------------------ | ------------------------------------------ |
+| `auth.register`               | Registrar nuevo usuario              | `{ email, password, name }`                |
+| `auth.login`                  | Iniciar sesión                       | `{ email, password }`                      |
+| `auth.validate`               | Validar token JWT                    | `{ token }`                                |
+| `auth.refresh`                | Refrescar access token               | `{ refreshToken }`                         |
+| `auth.profile`                | Obtener perfil de usuario            | `{ userId }`                               |
+| `auth.request-password-reset` | Solicitar recuperación de contraseña | `{ email }`                                |
+| `auth.verify-reset-token`     | Verificar token de reset             | `{ token }`                                |
+| `auth.reset-password`         | Restablecer contraseña               | `{ token, newPassword }`                   |
+| `auth.change-password`        | Cambiar contraseña (autenticado)     | `{ userId, currentPassword, newPassword }` |
+| `auth.update-profile`         | Actualizar perfil de usuario         | `{ userId, name }`                         |
 
 ### Ejemplo de Uso desde API Gateway
 
@@ -362,17 +545,31 @@ async login(@Body() dto: LoginUserDto) {
 
 Los casos de uso encapsulan la lógica de negocio:
 
+**Autenticación:**
+
 - **RegisterUserUseCase**: Lógica de registro
 - **LoginUserUseCase**: Lógica de autenticación
 - **ValidateTokenUseCase**: Validación de tokens
 - **RefreshTokenUseCase**: Renovación de tokens
 - **GetUserProfileUseCase**: Obtención de perfil
 
+**Recuperación de Contraseña:**
+
+- **RequestPasswordResetUseCase**: Genera token y envía email de recuperación
+- **VerifyResetTokenUseCase**: Verifica validez de tokens de reset
+- **ResetPasswordUseCase**: Restablece contraseña con token
+- **ChangePasswordUseCase**: Cambio de contraseña para usuario autenticado
+
+**Gestión de Perfil:**
+
+- **UpdateUserProfileUseCase**: Actualización de información de perfil
+
 ### Repositorio
 
 El repositorio abstrae el acceso a datos:
 
 **Interfaz** (`domain/repositories/user.repository.interface.ts`):
+
 ```typescript
 export interface UserRepository {
   findByEmail(email: string): Promise<User | null>;
@@ -384,13 +581,20 @@ export interface UserRepository {
 ```
 
 **Implementación** (`infrastructure/database/prisma-user.repository.ts`):
+
 - Implementa la interfaz usando Prisma
 - Maneja la persistencia en PostgreSQL
 
-### Servicios de Seguridad
+### Servicios de Infraestructura
+
+**Seguridad:**
 
 - **JwtService**: Generación y verificación de tokens JWT
 - **BcryptService**: Hash y comparación de contraseñas
+
+**Email:**
+
+- **EmailService**: Envío de emails (mock en desarrollo, listo para producción)
 
 ## ⚙️ Configuración
 
@@ -448,9 +652,23 @@ const isValid = await bcrypt.compare(password, hashedPassword);
 - **Refresh Token**: Larga duración (7 días) almacenado en base de datos para poder revocarlo
 - **Secreto**: Debe ser una cadena aleatoria fuerte (256 bits recomendado)
 
+### 3. Tokens de Recuperación de Contraseña
+
+- **Generación**: Tokens criptográficamente seguros de 32 bytes usando `crypto.randomBytes()`
+- **Expiración**: 1 hora por defecto
+- **Un solo uso**: Los tokens se marcan como usados después de restablecer la contraseña
+- **Almacenamiento**: Tokens almacenados en base de datos para validación
+
+### 4. Email de Recuperación
+
+- **Seguridad**: No se revela si el email existe en el sistema
+- **Mock en desarrollo**: Los emails se registran en logs con el token de reset
+- **Listo para producción**: Fácil integración con SendGrid, AWS SES, etc.
+
 ### 3. Validación de Inputs
 
 Todos los DTOs se validan usando `class-validator`:
+
 - Email debe ser válido
 - Contraseña debe cumplir requisitos mínimos
 - Campos requeridos se validan
@@ -458,6 +676,7 @@ Todos los DTOs se validan usando `class-validator`:
 ### 4. Manejo de Errores
 
 Los errores se manejan de forma segura:
+
 - No se revela si un email existe o no (evita enumeración)
 - Mensajes de error genéricos para credenciales inválidas
 
@@ -735,6 +954,7 @@ pnpm test:api-auth:e2e
 ```
 
 **Requisitos**:
+
 - Base de datos configurada y migrada
 - API Gateway corriendo (para tests de integración)
 
@@ -754,4 +974,3 @@ El servicio está instrumentado con OpenTelemetry:
 - [Documentación de NestJS Microservices](https://docs.nestjs.com/microservices/basics)
 - [Documentación de JWT](https://jwt.io/)
 - [DeepWiki - Authentication Service](https://deepwiki.com/bleidertcs/nx-micro/7-authentication-service)
-

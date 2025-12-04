@@ -159,11 +159,24 @@ Punto único de entrada para todas las peticiones externas. Implementa:
 
 Maneja todas las operaciones de autenticación y gestión de usuarios:
 
+**Autenticación:**
+
 - **Registro**: Creación de usuarios con hash de contraseñas con bcrypt
 - **Login**: Estrategia de doble token (access: 15m, refresh: 7d)
 - **Validación de Token**: Verificación de firma JWT
 - **Refresh de Token**: Rotación de tokens para seguridad
 - **Acceso a Perfil**: Endpoint protegido de perfil de usuario
+
+**Recuperación de Contraseña:**
+
+- **Solicitar Reset**: Genera token seguro y envía email de recuperación
+- **Verificar Token**: Valida tokens de reset antes de usarlos
+- **Restablecer Contraseña**: Restablece contraseña con token válido
+- **Cambiar Contraseña**: Permite a usuarios autenticados cambiar su contraseña
+
+**Gestión de Perfil:**
+
+- **Actualizar Perfil**: Modificación de información del usuario (nombre, etc.)
 
 📖 **Documentación detallada**: Ver [apps/api-auth/README.md](apps/api-auth/README.md)
 

@@ -130,4 +130,96 @@ export class PrismaUserRepository implements UserRepository {
 
     this.logger.info('Refresh token deleted');
   }
+
+  // Password reset methods
+  async savePasswordResetToken(
+    userId: string,
+    token: string,
+    expiresAt: Date
+  ): Promise<void> {
+    this.logger.info('Saving password reset token', { userId });
+
+    await this.prisma.passwordResetToken.create({
+      data: {
+        token,
+        userId,
+        expiresAt,
+      },
+    });
+
+    this.logger.info('Password reset token saved', { userId });
+  }
+
+  async findPasswordResetToken(
+    token: string
+  ): Promise<{ userId: string; expiresAt: Date; used: boolean } | null> {
+    this.logger.info('Finding password reset token');
+
+    const resetToken = await this.prisma.passwordResetToken.findUnique({
+      where: { token },
+    });
+
+    if (!resetToken) {
+      this.logger.info('Password reset token not found');
+      return null;
+    }
+
+    return {
+      userId: resetToken.userId,
+      expiresAt: resetToken.expiresAt,
+      used: resetToken.used,
+    };
+  }
+
+  async markResetTokenAsUsed(token: string): Promise<void> {
+    this.logger.info('Marking reset token as used');
+
+    await this.prisma.passwordResetToken.update({
+      where: { token },
+      data: { used: true },
+    });
+
+    this.logger.info('Reset token marked as used');
+  }
+
+  async deletePasswordResetToken(token: string): Promise<void> {
+    this.logger.info('Deleting password reset token');
+
+    await this.prisma.passwordResetToken.delete({
+      where: { token },
+    });
+
+    this.logger.info('Password reset token deleted');
+  }
+
+  async updatePassword(userId: string, hashedPassword: string): Promise<void> {
+    this.logger.info('Updating user password', { userId });
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+
+    this.logger.info('User password updated', { userId });
+  }
+
+  async updateProfile(userId: string, name: string): Promise<User> {
+    this.logger.info('Updating user profile', { userId });
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: { name },
+    });
+
+    this.logger.info('User profile updated', { userId });
+
+    return User.create(
+      updatedUser.id,
+      updatedUser.email,
+      updatedUser.password,
+      updatedUser.name,
+      updatedUser.createdAt,
+      updatedUser.updatedAt
+    );
+  }
 }
