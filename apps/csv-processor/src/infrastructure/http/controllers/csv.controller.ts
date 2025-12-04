@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { ProcessCsvUseCase } from '../../../application/use-cases/process-csv.use-case';
+import { ProcessCsvUseCase } from '../../../app/use-cases/process-csv.use-case';
 
 @Controller()
 export class CsvController {

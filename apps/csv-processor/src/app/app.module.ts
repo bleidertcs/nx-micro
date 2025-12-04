@@ -6,7 +6,7 @@ import { RpcCustomExceptionFilter } from '@nx-microservices/shared-lib';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CsvController } from '../infrastructure/http/controllers/csv.controller';
-import { ProcessCsvUseCase } from '../application/use-cases/process-csv.use-case';
+import { ProcessCsvUseCase } from './use-cases/process-csv.use-case';
 import { PrismaReviewRepository } from '../infrastructure/persistence/prisma/prisma-review.repository';
 
 @Module({

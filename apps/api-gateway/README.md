@@ -36,6 +36,7 @@ El Gateway actúa como un proxy que enruta peticiones HTTP a los microservicios 
 ### 2. Rate Limiting
 
 Implementa throttling global usando `@nestjs/throttler`:
+
 - **Límite**: 10 peticiones por 60 segundos
 - **Alcance**: Global para todos los endpoints
 - **Configuración**: `apps/api-gateway/src/app/app.module.ts`
@@ -69,7 +70,7 @@ sequenceDiagram
     participant JWT as JwtAuthGuard
     participant A as api-auth
     participant DB as Database
-    
+
     C->>G: HTTP Request<br/>Authorization: Bearer <token>
     G->>JWT: Intercept Request
     JWT->>JWT: Extract Token from Header
@@ -92,6 +93,7 @@ sequenceDiagram
 ### 4. Documentación Swagger
 
 Swagger UI está disponible en:
+
 - **URL**: http://localhost:3000/api/docs
 - **Configuración**: `apps/api-gateway/src/config/swagger.config.ts`
 
@@ -139,7 +141,7 @@ sequenceDiagram
     participant GS as Gateway Service
     participant TC as TCP Client
     participant MS as Microservicio
-    
+
     C->>GC: HTTP Request
     GC->>RL: Check Rate Limit
     alt Rate Limit Exceeded
@@ -181,8 +183,8 @@ export const microservicesConfig = ClientsModule.register([
     name: SERVICES.API_AUTH,
     transport: Transport.TCP,
     options: {
-      host: TCP_CONFIG.HOST,        // '127.0.0.1' por defecto
-      port: TCP_CONFIG.PORTS.API_AUTH,  // 3001 por defecto
+      host: TCP_CONFIG.HOST, // '127.0.0.1' por defecto
+      port: TCP_CONFIG.PORTS.API_AUTH, // 3001 por defecto
     },
   },
   {
@@ -190,7 +192,7 @@ export const microservicesConfig = ClientsModule.register([
     transport: Transport.TCP,
     options: {
       host: TCP_CONFIG.HOST,
-      port: TCP_CONFIG.PORTS.NETFLIX,   // 3002 por defecto
+      port: TCP_CONFIG.PORTS.NETFLIX, // 3002 por defecto
     },
   },
   {
@@ -198,7 +200,7 @@ export const microservicesConfig = ClientsModule.register([
     transport: Transport.TCP,
     options: {
       host: TCP_CONFIG.HOST,
-      port: TCP_CONFIG.PORTS.CSV_PROCESSOR,  // 3003 por defecto
+      port: TCP_CONFIG.PORTS.CSV_PROCESSOR, // 3003 por defecto
     },
   },
 ]);
@@ -231,6 +233,7 @@ async sendCommand(serviceName: string, pattern: string, data?: any): Promise<Ser
 ```
 
 **Características**:
+
 - **Timeout**: 5 segundos por defecto (configurable vía `TCP_TIMEOUT`)
 - **Reconexión automática**: Los clientes se conectan automáticamente si no están conectados
 - **Manejo de errores**: Los errores se capturan y se devuelven como respuestas estructuradas
@@ -240,16 +243,12 @@ async sendCommand(serviceName: string, pattern: string, data?: any): Promise<Ser
 ```typescript
 @Controller('auth')
 export class AuthController {
-  constructor(
-    @Inject(SERVICES.API_AUTH) private readonly authService: ClientProxy
-  ) {}
+  constructor(@Inject(SERVICES.API_AUTH) private readonly authService: ClientProxy) {}
 
   @Post('login')
   async login(@Body() dto: LoginUserDto) {
     // Envía comando 'auth.login' al servicio api-auth vía TCP
-    return firstValueFrom(
-      this.authService.send({ cmd: 'auth.login' }, dto)
-    );
+    return firstValueFrom(this.authService.send({ cmd: 'auth.login' }, dto));
   }
 }
 ```
@@ -260,33 +259,46 @@ Todos los endpoints están disponibles bajo el prefijo `/api`.
 
 ### Autenticación (`/api/auth`)
 
-| Método | Endpoint | Descripción | Autenticación |
-|--------|----------|-------------|---------------|
-| POST | `/api/auth/register` | Registrar nuevo usuario | No |
-| POST | `/api/auth/login` | Iniciar sesión | No |
-| POST | `/api/auth/refresh` | Refrescar token | No |
-| POST | `/api/auth/validate` | Validar token | No |
-| GET | `/api/auth/profile` | Obtener perfil de usuario | Sí (JWT) |
+| Método | Endpoint                           | Descripción                          | Autenticación |
+| ------ | ---------------------------------- | ------------------------------------ | ------------- |
+| POST   | `/api/auth/register`               | Registrar nuevo usuario              | No            |
+| POST   | `/api/auth/login`                  | Iniciar sesión                       | No            |
+| POST   | `/api/auth/refresh`                | Refrescar token                      | No            |
+| POST   | `/api/auth/validate`               | Validar token                        | No            |
+| GET    | `/api/auth/profile`                | Obtener perfil de usuario            | Sí (JWT)      |
+| PUT    | `/api/auth/profile`                | Actualizar perfil de usuario         | Sí (JWT)      |
+| POST   | `/api/auth/change-password`        | Cambiar contraseña                   | Sí (JWT)      |
+| POST   | `/api/auth/request-password-reset` | Solicitar recuperación de contraseña | No            |
+| POST   | `/api/auth/verify-reset-token`     | Verificar token de reset             | No            |
+| POST   | `/api/auth/reset-password`         | Restablecer contraseña con token     | No            |
+
+**Flujos de Password Recovery:**
+
+1. Usuario solicita reset → `POST /api/auth/request-password-reset`
+2. Sistema envía email con token (check logs en desarrollo)
+3. Usuario verifica token (opcional) → `POST /api/auth/verify-reset-token`
+4. Usuario restablece contraseña → `POST /api/auth/reset-password`
 
 ### Netflix Shows (`/api/services/netflix/netflix`)
 
-| Método | Endpoint | Descripción | Autenticación |
-|--------|----------|-------------|---------------|
-| GET | `/api/services/netflix/netflix` | Listar shows (con paginación) | No |
-| GET | `/api/services/netflix/netflix/:id` | Obtener show por ID | No |
-| POST | `/api/services/netflix/netflix` | Crear nuevo show | No |
-| PUT | `/api/services/netflix/netflix/:id` | Actualizar show | No |
-| DELETE | `/api/services/netflix/netflix/:id` | Eliminar show | No |
-| GET | `/api/services/netflix/netflix/search?title=...` | Buscar por título | No |
-| GET | `/api/services/netflix/netflix/filter?type=...&year=...` | Filtrar shows | No |
+| Método | Endpoint                                                 | Descripción                   | Autenticación |
+| ------ | -------------------------------------------------------- | ----------------------------- | ------------- |
+| GET    | `/api/services/netflix/netflix`                          | Listar shows (con paginación) | No            |
+| GET    | `/api/services/netflix/netflix/:id`                      | Obtener show por ID           | No            |
+| POST   | `/api/services/netflix/netflix`                          | Crear nuevo show              | No            |
+| PUT    | `/api/services/netflix/netflix/:id`                      | Actualizar show               | No            |
+| DELETE | `/api/services/netflix/netflix/:id`                      | Eliminar show                 | No            |
+| GET    | `/api/services/netflix/netflix/search?title=...`         | Buscar por título             | No            |
+| GET    | `/api/services/netflix/netflix/filter?type=...&year=...` | Filtrar shows                 | No            |
 
 ### CSV Processing (`/api/csv`)
 
-| Método | Endpoint | Descripción | Autenticación |
-|--------|----------|-------------|---------------|
-| POST | `/api/csv/process` | Subir y procesar archivo CSV | No |
+| Método | Endpoint           | Descripción                  | Autenticación |
+| ------ | ------------------ | ---------------------------- | ------------- |
+| POST   | `/api/csv/process` | Subir y procesar archivo CSV | No            |
 
 **Ejemplo de uso**:
+
 ```bash
 curl -X POST http://localhost:3000/api/csv/process \
   -F "file=@mi-archivo.csv"
@@ -345,6 +357,7 @@ Protege contra abuso de API limitando el número de peticiones por IP.
 ### 2. Helmet
 
 Middleware de seguridad que establece varios headers HTTP:
+
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
 - `X-XSS-Protection: 1; mode=block`
@@ -361,6 +374,7 @@ Todos los DTOs se validan usando `class-validator` con modo whitelist.
 ### 5. Autenticación JWT
 
 Los endpoints protegidos requieren un token JWT válido en el header:
+
 ```
 Authorization: Bearer <token>
 ```
@@ -406,6 +420,7 @@ pnpm test:api-gateway:e2e
 ```
 
 **Requisitos**:
+
 - Todos los microservicios deben estar corriendo
 - Bases de datos configuradas
 
@@ -414,4 +429,3 @@ pnpm test:api-gateway:e2e
 - [README Principal](../../README.md)
 - [Documentación de NestJS Microservices](https://docs.nestjs.com/microservices/basics)
 - [DeepWiki - API Gateway](https://deepwiki.com/bleidertcs/nx-micro/5-api-gateway)
-

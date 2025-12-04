@@ -1,12 +1,12 @@
 import { Controller, Inject } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CreateNetflixShowUseCase } from '../../../application/use-cases/create-netflix-show.use-case';
-import { GetNetflixShowsUseCase } from '../../../application/use-cases/get-netflix-shows.use-case';
-import { GetNetflixShowUseCase } from '../../../application/use-cases/get-netflix-show.use-case';
-import { UpdateNetflixShowUseCase } from '../../../application/use-cases/update-netflix-show.use-case';
-import { DeleteNetflixShowUseCase } from '../../../application/use-cases/delete-netflix-show.use-case';
-import { CreateNetflixShowDto } from '../../../application/dtos/create-netflix-show.dto';
-import { UpdateNetflixShowDto } from '../../../application/dtos/update-netflix-show.dto';
+import { CreateNetflixShowUseCase } from '../../../app/use-cases/create-netflix-show.use-case';
+import { GetNetflixShowsUseCase } from '../../../app/use-cases/get-netflix-shows.use-case';
+import { GetNetflixShowUseCase } from '../../../app/use-cases/get-netflix-show.use-case';
+import { UpdateNetflixShowUseCase } from '../../../app/use-cases/update-netflix-show.use-case';
+import { DeleteNetflixShowUseCase } from '../../../app/use-cases/delete-netflix-show.use-case';
+import { CreateNetflixShowDto } from '../../../app/dtos/create-netflix-show.dto';
+import { UpdateNetflixShowDto } from '../../../app/dtos/update-netflix-show.dto';
 import { LOGGER_TOKEN } from '@nx-microservices/observability';
 import { Logger } from 'winston';
 
