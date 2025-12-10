@@ -1,4 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
+import { NestLoggerService } from '@nx-microservices/observability';
+
 import { NetflixShowRepository } from '../../domain/repositories/netflix-show.repository';
 import { CreateNetflixShowDto } from '../dtos/create-netflix-show.dto';
 import { NetflixShow } from '../../domain/entities/netflix-show.entity';
@@ -8,10 +10,14 @@ import { NETFLIX_SHOW_REPOSITORY } from '../../config/constants';
 export class CreateNetflixShowUseCase {
   constructor(
     @Inject(NETFLIX_SHOW_REPOSITORY)
-    private readonly repository: NetflixShowRepository
+    private readonly repository: NetflixShowRepository,
+    private readonly logger: NestLoggerService
   ) {}
 
+
   async execute(dto: CreateNetflixShowDto): Promise<NetflixShow> {
+    this.logger.log(`Creating new Netflix show: ${dto.title}`, 'CreateNetflixShowUseCase');
+
     const entity = new NetflixShow(
       dto.show_id,
       dto.type,

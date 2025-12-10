@@ -4,7 +4,8 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app/app.module';
 import { RpcCustomExceptionFilter } from '@nx-microservices/shared-lib';
 import { envs } from './config';
-import { initObservability } from '@nx-microservices/observability';
+import { initObservability, NestLoggerService } from '@nx-microservices/observability';
+
 
 async function bootstrap() {
     // Initialize observability with the correct service name
@@ -18,8 +19,13 @@ async function bootstrap() {
                 host: '0.0.0.0',
                 port: envs.portNetflix,
             },
+            bufferLogs: true,
         }
     );
+
+    const logger = app.get(NestLoggerService);
+    app.useLogger(logger);
+
 
 
     app.useGlobalPipes(

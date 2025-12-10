@@ -1,11 +1,12 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { LOGGER_TOKEN } from '@nx-microservices/observability';
-import { Logger } from 'winston';
+import { NestLoggerService } from '@nx-microservices/observability';
+
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-    constructor(@Inject(LOGGER_TOKEN) private readonly logger: Logger) { }
+    constructor(private readonly logger: NestLoggerService) { }
+
 
     catch(exception: HttpException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
@@ -29,7 +30,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
             stack: exception.stack,
         };
 
-        this.logger.error('HTTP Exception', logData);
+        this.logger.error('HTTP Exception', JSON.stringify(logData));
+
 
         response.status(status).json({
             ...logData,

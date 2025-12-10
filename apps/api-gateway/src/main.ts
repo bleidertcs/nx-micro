@@ -13,13 +13,20 @@ import { AppModule } from './app/app.module';
 import { SwaggerModule } from '@nestjs/swagger';
 import { swaggerConfig } from './config/swagger.config';
 import { envs } from './config/envs';
-import { initObservability } from '@nx-microservices/observability';
+import { initObservability, NestLoggerService } from '@nx-microservices/observability';
+
 
 async function bootstrap() {
   // Initialize observability with the correct service name
   initObservability('api-gateway');
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+
+  const logger = app.get(NestLoggerService);
+  app.useLogger(logger);
+
 
   const globalPrefix = 'api';
 
