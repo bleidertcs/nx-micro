@@ -39,7 +39,7 @@ async function bootstrap() {
   );
 
 
-  app.useGlobalFilters(new RpcCustomExceptionFilter());
+  app.useGlobalFilters(new RpcCustomExceptionFilter(logger));
 
   await app.listen();
   Logger.log(

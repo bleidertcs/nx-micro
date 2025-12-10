@@ -29,7 +29,7 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
 
-  app.useGlobalFilters(new RpcCustomExceptionFilter());
+  app.useGlobalFilters(new RpcCustomExceptionFilter(logger));
 
   await app.listen();
   Logger.log(`🚀 CSV Processor microservice is running on TCP port: ${envs.port}`);

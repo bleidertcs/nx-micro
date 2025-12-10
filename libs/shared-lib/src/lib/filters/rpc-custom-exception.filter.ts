@@ -1,33 +1,18 @@
-import { Catch, ArgumentsHost, ExceptionFilter } from '@nestjs/common';
+import { Catch, ArgumentsHost, RpcExceptionFilter } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
+import { Observable, throwError } from 'rxjs';
+import { NestLoggerService } from '@nx-microservices/observability';
+
 
 @Catch(RpcException)
-export class RpcCustomExceptionFilter implements ExceptionFilter {
-    catch(exception: RpcException, host: ArgumentsHost) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse();
+export class RpcCustomExceptionFilter implements RpcExceptionFilter<RpcException> {
+    constructor(private readonly logger: NestLoggerService) {}
 
-        const rpcError = exception.getError();
+    catch(exception: RpcException, host: ArgumentsHost): Observable<any> {
+        const error = exception.getError();
+        this.logger.error(`RPC Exception: ${JSON.stringify(error)}`, 'RpcCustomExceptionFilter');
 
-        if (rpcError.toString().includes('Empty response')) {
-            return response.status(500).json({
-                status: 500,
-                message: rpcError.toString().substring(0, rpcError.toString().indexOf('(') - 1)
-            })
-        }
-
-        if (
-            typeof rpcError === 'object' &&
-            'status' in rpcError &&
-            'message' in rpcError
-        ) {
-            const status = isNaN(+(rpcError as any).status) ? 400 : +(rpcError as any).status;
-            return response.status(status).json(rpcError);
-        }
-
-        response.status(400).json({
-            status: 400,
-            message: rpcError,
-        });
+        return throwError(() => error);
     }
 }
+

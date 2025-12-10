@@ -1,5 +1,7 @@
 import { INestMicroservice, ValidationPipe } from '@nestjs/common';
 import { RpcCustomExceptionFilter } from '../filters/rpc-custom-exception.filter';
+import { NestLoggerService } from '@nx-microservices/observability';
+
 
 /**
  * Configures common microservice settings including validation and exception handling
@@ -15,5 +17,7 @@ export function configureMicroservice(app: INestMicroservice): void {
   );
 
   // Global RPC exception filter
-  app.useGlobalFilters(new RpcCustomExceptionFilter());
+  const logger = app.get(NestLoggerService);
+  app.useGlobalFilters(new RpcCustomExceptionFilter(logger));
+
 }
